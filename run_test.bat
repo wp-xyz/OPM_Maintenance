@@ -882,7 +882,7 @@ tar -xf %ZipDir%\IBX4Lazarus.zip IBX4Lazarus
 @IF %ERRORLEVEL% NEQ 0 ECHO IBX4Lazarus (ibLegacyServices.lpk) >> %Log%
 %PathToLaz%\lazbuild -B IBX4Lazarus\dclibx.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO IBX4Lazarus (dclibx.lpk) >> %Log%
-@IF /I "%Package%"=="IB4Lazarus" GOTO :done
+@IF /I "%Package%"=="IBX4Lazarus" GOTO :done
 
 :IndustrialStuff
 tar -xf %ZipDir%\industrialstuff.zip industrialstuff
