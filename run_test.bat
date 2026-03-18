@@ -19,7 +19,7 @@
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :: === Preparations ===
-@SET PathToLaz=C:\Lazarus\lazarus-4.0_FPC-3.2.2_64bit
+@SET PathToLaz=C:\Lazarus\lazarus-4.6_FPC-3.2.2_64bit
 @SET ZipDir=..\opm_local_repository
 @SET Log=log.txt
 @SET Package=%1
@@ -761,6 +761,11 @@ tar -xf %ZipDir%\FpTelegram.zip FpTelegram
 @IF %ERRORLEVEL% NEQ 0 ECHO FpTelegram (fptelegram_dt.lpk) >> %Log%
 @IF /I "%Package%"=="FpTelegram" GOTO :done
 
+:fp-tera-tpl
+tar -xf %ZipDir%\fp-tera-tpl.zip fp-tera-tpl
+%PathToLaz%\lazbuild -B fp-tera-tpl\packages\Lazarus\fp_tera_tpl.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO fp-tera-tpl (fp_tera_tpl.lpk) >> %Log%
+@IF /I "%Package%"=="fp-tera-tpl" GOTO :done
 
 :: -------------------------------------- G ------------------------------------
 
@@ -884,6 +889,12 @@ tar -xf %ZipDir%\IBX4Lazarus.zip IBX4Lazarus
 @IF %ERRORLEVEL% NEQ 0 ECHO IBX4Lazarus (dclibx.lpk) >> %Log%
 @IF /I "%Package%"=="IBX4Lazarus" GOTO :done
 
+:IDE-FileManager
+tar -xf %ZipDir%\IDE-FileManager.zip IDE-FileManager
+%PathToLaz%\lazbuild -B IDE-FileManager\ide-file-manager\idefilemanager.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO IDE-FileManager (idefilemanager.lpk) >> %Log%
+@IF /I "%Package%"=="IDE-FileManager" GOTO :done
+
 :IndustrialStuff
 tar -xf %ZipDir%\industrialstuff.zip industrialstuff
 %PathToLaz%\lazbuild -B industrialstuff\industrial.lpk
@@ -898,6 +909,13 @@ tar -xf %ZipDir%\Indy10.zip Indy10
 @IF /I "%Package%"=="Indy10" GOTO :done
 @IF /I "%Package%"=="Indy" GOTO :done
 
+:IndySecOpenSSL
+tar -xf %ZipDir%\IndySecOpenSSL.zip IndySecOpenSSL
+%PathToLaz%\lazbuild -B IndySecOpenSSL\lazarus-fpc\IndySecOpenSSL.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO IndySecOpenSSL (IndySecOpenSSL.lpk) >> %Log%
+%PathToLaz%\lazbuild -B IndySecOpenSSL\lazarus-fpc\indylaz_openssl.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO IndySECOpenSSL (indylaz_openssl.lpk) >> %Log%
+@IF /I "%Package%"=="IndySecOpenSSL" GOTO :done
 
 :: -------------------------------- J ------------------------------------------
 
@@ -1085,6 +1103,12 @@ tar -xf %ZipDir%\LongTimer.zip longtimer
 @IF %ERRORLEVEL% NEQ 0 ECHO LongTimer (longtimerpackage.lpk) >> %Log%
 @IF /I "%Package%"=="LongTimer" GOTO :done
 
+:LrBarcodesEx
+tar -xf %ZipDir%\LrBarcodesEx.zip LrBarcodesEx
+%PathToLaz%\lazbuild -B LrBarcodesEx\lr_barcodesex.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO LrBarCodesEx (lr_barcodesex.lpk) >> %Log%
+@IF /I "%Package%"=="LrBarCodesEx" GOTO :done
+
 :LuiPack
 tar -xf %ZipDir%\LuiPack.zip luipack
 
@@ -1260,6 +1284,12 @@ tar -xf %ZipDir%\NumCPULib.zip NumCPULib
 
 
 ::-------------------------------------- O -------------------------------------
+
+:OAuth2Client
+tar -xf %ZipDir%\OAuth2Client.zip OAuth2Client
+%PathToLaz%\lazbuild -B OAuth2Client\oauth2_laz.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO OAuth2client (oauth2_laz.lpk) >> %Log%
+@IF /I "%Package%"=="OAuth2Client" GOTO :done
 
 :OnGuard
 tar -xf %ZipDir%\OnGuard.zip OnGuard
@@ -1537,6 +1567,12 @@ tar -xf %ZipDir%\PowerPDF.zip PowerPDF
 @IF %ERRORLEVEL% NEQ 0 ECHO PowerPDF (pack_powerpdf.lpk)>> %Log%
 @IF /I "%Package%"=="PowerPDF" GOTO :done
 
+:ProjectMetrics
+tar -xf %ZipDir%\ProjectMetrics.zip ProjectMetrics
+%PathToLaz%\lazbuild -B ProjectMetrics\src\projectmetrics.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO ProjectMetrics (projectmetrics.lpk)>> %Log%
+@IF /I "%Package%"=="ProjectMetrics" GOTO :done
+
 :PythonForLazarus
 tar -xf %ZipDir%\PythonForLazarus.zip PythonForLazarus
 %PathToLaz%\lazbuild -B PythonForLazarus\python4lazarus\python4lazarus_package.lpk
@@ -1686,6 +1722,14 @@ tar -xf %ZipDir%\SysTools.zip systools
 
 ::-------------------------------------- T -------------------------------------
 
+:TaurusTLS
+tar -xf %ZipDir%\TaurusTLS.zip TaurusTLS
+%PathToLaz%\lazbuild -B TaurusTLS\Packages\lazarus\taurustlsrt.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO TaurusTLD (taurustlsrt.lpk) >> %Log%
+%PathToLaz%\lazbuild -B TaurusTLS\Packages\lazarus\taurustlsldsgn.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO TaurusTLD (taurustlsldsgn.lpkk) >> %Log%
+@IF /I "%Package%"=="TaurusTLS" GOTO :done
+
 :TDINoteBook
 tar -xf %ZipDir%\TDINoteBook.zip TDINoteBook
 %PathToLaz%\lazbuild -B TDINoteBook\tdi.lpk
@@ -1727,6 +1771,12 @@ tar -xf %ZipDir%\TVPlanit.zip tvplanit
 %PathToLaz%\lazbuild -B tvplanit\laz_visualplanit_zeos_design.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO TVPlanit (laz_visualplanit_zeos_design.lpk) >> %Log%
 @IF /I "%Package%"=="TVPlanit" GOTO :done
+
+:TwainScanner
+tar -xf %ZipDir%\TwainScanner.zip DelphiTwain
+%PathToLaz%\lazbuild -B DelphiTwain\delphitwain_pkg.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO TwainScanner (delphitwain_pkg.lpk) >> %Log%
+@IF /I "%Package%"=="TwainScanner" GOTO :done
 
 :TwilioSMS
 tar -xf %ZipDir%\TwilioSMS.zip TwilioLib
@@ -1798,6 +1848,12 @@ tar -xf %ZipDir%\WebView4Delphi.zip WebView4Delphi
 %PathToLaz%\lazbuild -B WebView4Delphi\packages\\webview4delphi.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO WebView4Delphi (webview4delphi.lpk) >> %Log%
 @IF /I "%Package%"=="WebView4Delphi" GOTO :done
+
+:WIAScanner
+tar -xf %ZipDir%\WIAScanner.zip WIAPascal
+%PathToLaz%\lazbuild -B WiaPascal\WIAPascal_pkg.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO WiaScanner (WIAPascal_pkg.lpk) >> %Log%
+@IF /I "%Package%"=="WIAScanner" GOTO :done
 
 :Wst
 tar -xf %ZipDir%\Wst.zip wst
