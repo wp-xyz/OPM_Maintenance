@@ -60,18 +60,6 @@ tar -xf %ZipDir%\DCPCrypt.zip DCPcrypt
 @IF %ERRORLEVEL% NEQ 0 ECHO DCPcrypt (dcpcrypt_laz.lpk) >> %Log%
 @IF /I "%Package%"=="DCPCrypt" GOTO :done
 
-:EControl
-tar -xf %ZipDir%\EControl.zip EControl
-%PathToLaz%\lazbuild -B EControl\econtrol\econtrol_package.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO EControl (econtrol_package.lpk) >> %Log%
-@IF /I "%Package%"=="EControl" GOTO :done
-
-:EncConv
-tar -xf %ZipDir%\EncConv.zip EncConv
-%PathToLaz%\lazbuild -B EncConv\encconv\encconv_package.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO EncConv (encconv_package.lpk) >> %Log%
-@IF /I "%Package%"=="EncConv" GOTO :done
-
 :FBIntf
 tar -xf %ZipDir%\FBIntf.zip FBIntf
 %PathToLaz%\lazbuild -B FBIntf\fbintf.lpk
@@ -323,6 +311,29 @@ tar -xf %ZipDir%\VampyreImaging.zip VampyreImaging
 @IF %ERRORLEVEL% NEQ 0 ECHO VampyreImaging (VampyreImagingPackageExt.lpk) >> %Log%
 @IF /I "%Package%"=="VampyreImaging" GOTO :done
 
+:ATSynEdit_and_related
+:EncConv
+tar -xf %ZipDir%\EncConv.zip EncConv
+%PathToLaz%\lazbuild -B EncConv\encconv\encconv_package.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO EncConv (encconv_package.lpk) >> %Log%
+@IF /I "%Package%"=="EncConv" GOTO :done
+
+:ATFlatControls
+%PathToLaz%\lazbuild -B ATFlatcontrols\atflatcontrols\atflatcontrols_package.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO ATFlatControls (atflatcontrols_package.lpk) >> %Log%
+@IF /I "%Package%"=="ATFlatControls" GOTO :done
+
+:ATSynEdit
+%PathToLaz%\lazbuild -B ATSynEdit\atsynedit\atsynedit_package.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO ATSynEdit (atsynedit_package.lpk) >> %Log%
+@IF /I "%Package%"=="ATSynEdit" GOTO :done
+
+:EControl
+tar -xf %ZipDir%\EControl.zip EControl
+%PathToLaz%\lazbuild -B EControl\econtrol\econtrol_package.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO EControl (econtrol_package.lpk) >> %Log%
+@IF /I "%Package%"=="EControl" GOTO :done
+
 
 :: ===================== Stand-alone packages ===================================
 
@@ -364,11 +375,6 @@ tar -xf %ZipDir%\VampyreImaging.zip VampyreImaging
 @IF /I "%Package%"=="ATFileNotif" GOTO :done
 @IF /I "%Package%"=="ATFileNotif-Lazarus" GOTO :done
 
-:ATFlatControls
-%PathToLaz%\lazbuild -B ATFlatcontrols\atflatcontrols\atflatcontrols_package.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO ATFlatControls (atflatcontrols_package.lpk) >> %Log%
-@IF /I "%Package%"=="ATFlatControls" GOTO :done
-
 :ATImageBox
 %PathToLaz%\lazbuild -B ATImageBox\atimagebox\atimagebox_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ATImageBox (atimagebox_package.lpk) >> %Log%
@@ -378,11 +384,6 @@ tar -xf %ZipDir%\VampyreImaging.zip VampyreImaging
 %PathToLaz%\lazbuild -B ATShapeLine\atshapeline\atshapeline_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ATShapeLine (atshapeline_package.lpk) >> %Log%
 @IF /I "%Package%"=="ATShapeLine" GOTO :done
-
-:ATSynEdit
-%PathToLaz%\lazbuild -B ATSynEdit\atsynedit\atsynedit_package.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO ATSynEdit (atsynedit_package.lpk) >> %Log%
-@IF /I "%Package%"=="ATSynEdit" GOTO :done
 
 :ATSynEdit_Cmp
 %PathToLaz%\lazbuild -B ATSynEdit_Cmp\atsynedit_cmp\atsynedit_cmp_package.lpk
@@ -918,18 +919,6 @@ tar -xf %ZipDir%\IndySecOpenSSL.zip IndySecOpenSSL
 @IF /I "%Package%"=="IndySecOpenSSL" GOTO :done
 
 :: -------------------------------- J ------------------------------------------
-
-:JPLib
-tar -xf %ZipDir%\JPLib.zip JPLib
-%PathToLaz%\lazbuild -B JPLib\packages\lazarus\jplib.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO JPLib (jplib.lpk) >> %Log%
-@IF /I "%Package%"=="JPLib" GOTO :done
-
-:JPPack
-tar -xf %ZipDir%\JPPack.zip JPPack
-%PathToLaz%\lazbuild -B JPPack\packages\lazarus\jppacklcl.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO JPPack (jppacklcl.lpk) >> %Log%
-@IF /I "%Package%"=="JPPack" GOTO :done
 
 :JujiboUtils
 tar -xf %ZipDir%\jujiboutils.zip jujiboutils
