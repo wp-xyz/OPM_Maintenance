@@ -1,0 +1,80 @@
+Started at 23:42:49,86 
+RX (rx_sort_fbdataset.lpk)                               // ---> not installed by OPM --> ignoring
+RX (rx_sort_ibx.lpk)                                     // ---> not installed by OPM --> ignoring
+EControl (econtrol_package.lpk)                          // ---> not an issue any more ---> ok
+ABProjectFiles (abprojectfiles.lpk)                      // ---> reported to https://github.com/abdullahi-usman/ABProjectFiles/issues/1
+ACS (laz_acs_directx.lpk)                                // ---> reported to https://github.com/serbod/acs/issues/38 --> new version ---> fixed ===> OK
+ATSynEdit_Cmp (atsynedit_cmp_package.lpk)                // ---> reported in https://github.com/Alexey-T/ATSynEdit_Cmp/issues/3
+ATSynEdit_Ex (atsynedit_ex_package.lpk)                  // ---> follow-up of atsynedit_cmp_package issue
+BGRAControls (bgracontrols.lpk)                          // ---> fixed in run_test.bat
+brookfreepascal (brookex.lpk)                            // ---> reported to https://github.com/risoflora/brookfreepascal/issues/27
+CastleGameEngine (castle_base.lpk) 
+CastleGameEngine (castle_components.lpk) 
+CastleGameEngine (castle_window.lpk) 
+CastleGameEngine (alternative_castle_window_based_on_lcl.lpk) 
+Codelibrarian (codelibrarian.lpk) 
+EvsSimpleGraph (ugraphrtm.lpk)                           // ---> tlDefault issue, LCLIntf.OffsetRect --> reported on https://github.com/taazz/EvsSimpleGraph/issues/4
+EvsSimpleGraph (ugraphdsgn.lpk) 
+ExtendedPackages (lazextcore.lpk)                        // --> LazUTF8Classes issue, unit Types missing, package ExpertSuperForm missing --> contacted author (Matthieu Giroux) ---> Fixed in new version for OPM
+ExtendedPackages (lazextbase.lpk) 
+ExtendedPackages (lazextbuttons.lpk) 
+ExtendedPackages (lazextcomponents.lpk) 
+ExtendedPackages (lazextcomponentsimg.lpk) 
+ExtendedPackages (lazextcopy.lpk) 
+ExtendedPackages (lazextpascal.lpk) 
+ExtendedPackages (lazextinit.lpk) 
+ExtendedPackages (lazextnet.lpk) 
+ExtendedPackages (lazextnumeric.lpk) 
+ExtendedPackages (lazextreports.lpk) 
+ExtendedPackages (lazextweb.lpk) 
+ExtendedPackages (lazextwebbase.lpk) 
+ExtendedPackages (lazregisterdbnet.lpk) 
+ExtendedPackages (lazregisterdbnetserver.lpk) 
+ExtendedPackages (lazregisterextcomp.lpk) 
+ExtendedPackages (lazregisteribx.lpk) 
+ExtendedPackages (lazregisterzeos.lpk) 
+EyeCandyControls (eccontrols.lpk) 
+Fortes4Lazarus (fortes324forlaz.lpk)                     // ---> missing unit types --> forked for fix to lazarus-packages repository
+GLScene (GLScene_BASS.lpk)                               // ---> these special requirements are not implemented. Tests should be skipped.
+GLScene (GLScene_CgShader.lpk) 
+GLScene (GLScene_FMOD.lpk) 
+GLScene (GLScene_NGD.lpk) 
+GLScene (GLScene_ODE.lpk) 
+GLScene (GLScene_OpenAL.lpk) 
+GLScene (GLScene_Physic_native.lpk) 
+GLScene (GLScene_Physic_newton.lpk) 
+GLScene (GLScene_SCL.lpk) 
+GLScene (GLScene_WinOnly.lpk) 
+LAMW (lazandroidwizardpack.lpk)                          // ---> reported to https://github.com/jmpessoa/lazandroidmodulewizard/issues/555 
+LazProfiler (LazProfiler.lpk)                            // ---> needs "Laz" in references to "TVirtualStringTree". Also: contains lots of "WriteLn", to be replaced by Debugln. Not working at runtime...
+LuiPack (luicontrols/luicontrols.lpk)                    // ---> reported in https://github.com/blikblum/luipack/issues/46
+LuiPack (luicontrols/jsonzvdatetimemediator_package.lpk) 
+LuiPack (luicomponents/luilclcomponents.lpk) 
+LuiPack (luicomponents/luifptest.lpk) 
+LuiPack (cairo/cairoimaging_package.lpk) 
+LuiPack (cairo/cairofpgui_package.lpk) 
+LuiPack (luicairo/luicairo_package.lpk) 
+LuiPack (luicairo/luicairo_extras.lpk) 
+LuiPack (luicairo/luiimage_package.lpk) 
+LuiPack (luicairo/luiimage_package_fpgui.lpk) 
+LuiPack (librereport_package.lpk) 
+LuiPack (luiapp_package.lpk)                            // ---> reported in https://github.com/blikblum/luipack/issues/46
+LuiPack (luidialogs_package.lpk) 
+LuiPack (vtvextras vtvutils_package.lpk) 
+MBColorLib (mbcolorliblaz.lpk)                          // ---> FIXED in OPM v2.2.2
+MORMot (mormot_cross.lpk) 
+PascalSCADA (pascalscada_db.lpk)                        // ---> package ZComponentDesign.lpk must be added as requirement of package pascalscada_db.lpk
+PascalSCADA (pascalscada_full.lpk)                      // ---> is fixed along with pascalscada_db
+pl_Cindy (pl_cindy.lpk)                             // ---> tlDefault issue
+pl_ExConctrols (pl_excontrols.lpk)                  // ---> types issue
+pl_Graphics32Mg (pl_graphics32mg.lpk)               // ok - no issue, maybe need to run pl_graphics32 first
+RingWatch(ringwatch.lpk)                            // ---> FreeThenNil (replace by FreeAndNil, or remove altogether). BUT: Barchart needed by demo   ===> REMOVE 
+SMNetGradient2.0.6 (smnetgradientlaz.lpk)           // OffsetRect issue
+SynFacilSyn (synfacilsyn.lpk)                       // TSynEdit issue ---> MARTIN
+ SysTools (laz_systools.lpk) 
+ SysTools (laz_systools_design.lpk) 
+ SysTools (laz_systoolsdb.lpk) 
+ SysTools (laz_systoolsdb_design.lpk) 
+ SysTools (laz_systoolswin.lpk) 
+ SysTools (laz_systoolswin_design.lpk) 
+Completed at 23:53:34,82 

@@ -1,0 +1,42 @@
+Started at 11:25:22,65 
+ABProjectFiles (abprojectfiles.lpk)                      // ---> reported to https://github.com/abdullahi-usman/ABProjectFiles/issues/1 
+BrookFreePascal (brookex.lpk)                            // ---> reported to https://github.com/risoflora/brookfreepascal/issues/27 
+CastleGameEngine (castle_base.lpk) 
+CastleGameEngine (castle_components.lpk) 
+CastleGameEngine (castle_window.lpk) 
+CastleGameEngine (alternative_castle_window_based_on_lcl.lpk) 
+Codelibrarian (codelibrarian.lpk)                                               // why? should have worked...
+EvsSimpleGraph (ugraphrtm.lpk)                           // ---> tlDefault issue, LCLIntf.OffsetRect --> reported on https://github.com/taazz/EvsSimpleGraph/issues/4
+EvsSimpleGraph (ugraphdsgn.lpk)                          // ---> follow-up of ugraphrtm.lpk
+EyeCandyControls (eccontrols.lpk) 
+LAMW (lazandroidwizardpack.lpk)                          // ---> reported to https://github.com/jmpessoa/lazandroidmodulewizard/issues/555 
+LazProfiler (LazProfiler.lpk)                            // ---> needs "Laz" in references to "TVirtualStringTree". Also: contains lots of "WriteLn", to be replaced by Debugln. Not working at runtime... ==> REMOVE FROM OPM  
+LuiPack (luicontrols/luicontrols.lpk)                    // ---> reported in https://github.com/blikblum/luipack/issues/46
+LuiPack (luicontrols/jsonzvdatetimemediator_package.lpk) // ---> follow-ups ...
+LuiPack (luicomponents/luilclcomponents.lpk) 
+LuiPack (luicomponents/luifptest.lpk) 
+LuiPack (cairo/cairoimaging_package.lpk) 
+LuiPack (cairo/cairofpgui_package.lpk) 
+LuiPack (luicairo/luiimage_package.lpk) 
+LuiPack (luicairo/luiimage_package_fpgui.lpk) 
+LuiPack (chronolog_package.lpk) 
+LuiPack (librereport_package.lpk) 
+LuiPack (luiapp_package.lpk) 
+LuiPack (luidialogs_package.lpk) 
+LuiPack (vtvextras vtvutils_package.lpk) 
+MORMot (mormot_cross.lpk) 
+PascalSCADA (pascalscada_db.lpk)                        // ---> package ZComponentDesign.lpk must be added as requirement of package pascalscada_db.lpk
+PascalSCADA (pascalscada_full.lpk)                      // ---> follow-up  
+pl_Cindy (pl_cindy.lpk)                                                         // ---> tlDefault issue
+pl_ExConctrols (pl_excontrols.lpk)                                              // ---> types issue
+ringwatch (ringwatch.lpk)                               // ---> FreeThenNil (replace by FreeAndNil, or remove altogether). BUT: Barchart needed by demo   ===> REMOVE 
+SynFacilSyn (synfacilsyn.lpk)                                                   // TSynEdit issue ---> contacted MartinMARTIN ---> patch submitted to github --> maintainer responded.
+SysTools (laz_systools.lpk)                                                     // 64 bit not supported --> ignore 
+SysTools (laz_systools_design.lpk) 
+SysTools (laz_systoolsdb.lpk) 
+SysTools (laz_systoolsdb_design.lpk) 
+SysTools (laz_systoolswin.lpk) 
+SysTools (laz_systoolswin_design.lpk) 
+TextViewer (viewerpackage.lpk)                                                  // UTF8CharacterLength removed
+UEControls (uecontrols.lpk)                                                     // FreeThenNil --> reported to https://github.com/mriscoc/uEControls/issues/2
+Completed at 11:45:03,23 

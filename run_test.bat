@@ -1,6 +1,7 @@
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-:: This Windows batch file compiles all packages available in OPM and adds    ::
-:: the OPM entry names package names to a log file (log.txt).                 :: 
+:: This Windows batch file compiles all packages available in OPM. When       ::
+:: compilation fails the OPM entry and package names of the failed entry are  ::
+:: copied to a log file (log.txt) for further inspection.                     ::
 ::                                                                            ::
 :: * Create a local repository first, i.e. use the OPM function to create a   ::
 ::   private repository, and copy all zip files from packages.lazarus-ide.org ::
@@ -11,21 +12,25 @@
 :: * Copy this batch file into this directory.                                ::
 :: * Adjust the path of the Lazarus installation to be used for compilation   ::
 ::   of the packages.                                                         ::
+:: * Since the package links are modified by this test it is recommended to   ::
+::   use a dedicated Lazarus installation, separate from your normal work.    ::
 ::                                                                            ::
 :: Running the test                                                           ::
-:: * cd into the directory with the batch file and the unzipped packages      ::
+:: * cd into the directory with the batch file                                ::
 :: * "run_test" to test all packages                                          ::
-:: * "run_test opm_name" to test package listed under this name in OPM        :: 
+:: * "run_test opm_name" to test OPM entry listed under this name in OPM      :: 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :: === Preparations ===
-@SET PathToLaz=C:\Lazarus\lazarus-4.6_FPC-3.2.2_64bit
+::@SET PathToLaz=C:\Lazarus\lazarus-4.6_FPC-3.2.2_64bit
+@SET PathToLaz=C:\Lazarus\lazarus-opm-test
 @SET ZipDir=..\opm_local_repository
 @SET Log=log.txt
 @SET Package=%1
 @SET path=%PathToLaz%;%path%
 
-ECHO Started at %TIME% > %Log%
+ECHO OPM compilation test using %PathToLaz% > %Log%
+ECHO Started at %TIME% >> %Log%
 
 @IF "%Package%" NEQ "" goto :%Package%
 
@@ -33,6 +38,7 @@ ECHO Started at %TIME% > %Log%
 :: === Packages needed by other packages ===
 
 :BGRABitmap
+RMDIR /s /Q BGRABitmap
 tar -xf %ZipDir%\BGRABitmap.zip BGRABitmap
 
 %PathToLaz%\lazbuild -B BGRABitmap\bgrabitmap\bgrabitmappack.lpk
@@ -53,6 +59,7 @@ tar -xf %ZipDir%\BGRABitmap.zip BGRABitmap
 @IF /I "%Package%"=="BGRABitmap" GOTO :done
 
 :DCPCrypt
+RMDIR /s /Q DCPcrypt
 tar -xf %ZipDir%\DCPCrypt.zip DCPcrypt
 %PathToLaz%\lazbuild -B DCPcrypt\dcpcrypt.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO DCPcrypt (dcpcrypt.lpk) >> %Log%
@@ -61,6 +68,7 @@ tar -xf %ZipDir%\DCPCrypt.zip DCPcrypt
 @IF /I "%Package%"=="DCPCrypt" GOTO :done
 
 :FBIntf
+RMDIR /s /Q FBIntf
 tar -xf %ZipDir%\FBIntf.zip FBIntf
 %PathToLaz%\lazbuild -B FBIntf\fbintf.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO FBIntf (fbintf.lpk) >> %Log%
@@ -70,8 +78,35 @@ tar -xf %ZipDir%\FBIntf.zip FBIntf
 @IF %ERRORLEVEL% NEQ 0 ECHO FBIntf (fbudrTestbed.lpk) >> %Log%
 @IF /I "%Package%"=="FBIntf" GOTO :done
 
+:IBControls
+RMDIR /s /Q IBControls
+tar -xf %ZipDir%\IBControls.zip IBControls
+%PathToLaz%\lazbuild -B IBControls\ibcontrols.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO IBCOntrols (ibcontrols.lpk) >> %Log%
+@IF /I "%Package%"=="IBControls" GOTO :done
+
+:IBX4Lazarus
+RMDIR /s /Q IBX4Lazarus
+tar -xf %ZipDir%\IBX4Lazarus.zip IBX4Lazarus
+%PathToLaz%\lazbuild -B IBX4Lazarus\ibexpress.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO IBX4Lazarus (ibexrpess.lpk) >> %Log%
+%PathToLaz%\lazbuild -B IBX4Lazarus\ibexpressconsolemode.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO IBX4Lazarus (ibexrpessconsolemode.lpk) >> %Log%
+%PathToLaz%\lazbuild -B IBX4Lazarus\iblocaldb.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO IBX4Lazarus (iblocaldb.lpk) >> %Log%
+%PathToLaz%\lazbuild -B IBX4Lazarus\iblocalnongui.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO IBX4Lazarus (iblocalnongui.lpk) >> %Log%
+%PathToLaz%\lazbuild -B IBX4Lazarus\ibnongui.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO IBX4Lazarus (ibnongui.lpk) >> %Log%
+%PathToLaz%\lazbuild -B IBX4Lazarus\ibLegacyServices.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO IBX4Lazarus (ibLegacyServices.lpk) >> %Log%
+%PathToLaz%\lazbuild -B IBX4Lazarus\dclibx.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO IBX4Lazarus (dclibx.lpk) >> %Log%
+@IF /I "%Package%"=="IBX4Lazarus" GOTO :done
+
 :FPSpreadsheet
-tar -xf %ZipDir%\FPSpreadsheet.zip fpspreadsheet
+RMDIR /s /Q FPSpreadsheet
+tar -xf %ZipDir%\FPSpreadsheet.zip FPSpreadsheet
 %PathToLaz%\lazbuild -B fpspreadsheet\laz_fpspreadsheet.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO FPSpreadsheet (laz_fpspreadsheet.lpk) >> %Log%
 
@@ -93,7 +128,8 @@ tar -xf %ZipDir%\FPSpreadsheet.zip fpspreadsheet
 @IF /I "%Package%"=="FPSpreadsheet" GOTO :done
 
 :Jvcllaz
-tar -xf %ZipDir%\Jvcllaz.zip jvcllaz
+RMDIR /s /Q JvclLaz
+tar -xf %ZipDir%\Jvcllaz.zip JvclLaz
 
 %PathToLaz%\lazbuild -B jvcllaz\packages\jvcorelazr.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO Jvcllaz (jvcorelazr.lpk) >> %Log%
@@ -179,8 +215,10 @@ tar -xf %ZipDir%\Jvcllaz.zip jvcllaz
 @IF %ERRORLEVEL% NEQ 0 ECHO Jvcllaz (jvxpctrlslazr.lpk) >> %Log%
 
 @IF /I "%Package%"=="Jvcllaz" GOTO :done
+@IF /I "%Package%"=="JvclLaz" GOTO :done
 
 :VirtualTreeViewV5
+RMDIR /s /Q VirtualTreeViewV5
 tar -xf %ZipDir%\VirtualTreeViewV5.zip VirtualTreeViewV5
 %PathToLaz%\lazbuild -B VirtualTreeViewV5\Source\virtualtreeview_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO VirtualTreeViewV5 (virtualtreeview_package.lpk) >> %Log%
@@ -188,6 +226,7 @@ tar -xf %ZipDir%\VirtualTreeViewV5.zip VirtualTreeViewV5
 
 :Zeos
 :ZeosDBO
+RMDIR /s /Q zeosdbo
 tar -xf %ZipDir%\ZeosDBO.zip zeosdbo
 %PathToLaz%\lazbuild -B zeosdbo\packages\lazarus\zcore.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ZeosDBO (zcore.lpk) >> %Log%
@@ -211,6 +250,7 @@ tar -xf %ZipDir%\ZeosDBO.zip zeosdbo
 @IF /I "%Package%"=="Zeos" GOTO :done
 
 :RX
+RMDIR /s /Q Rx
 tar -xf %ZipDir%\RX.zip Rx
 %PathToLaz%\lazbuild -B Rx\rxtools.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO RX (rxtools.lpk) >> %Log%
@@ -233,11 +273,12 @@ tar -xf %ZipDir%\RX.zip Rx
 %PathToLaz%\lazbuild -B Rx\rxdbgrid_print.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO RX (rxdbgrid_print.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B Rx\rx_sort_fbdataset.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO RX (rx_sort_fbdataset.lpk) >> %Log%
+:: Ignoring the next two - they are not installed by OPM
+::%PathToLaz%\lazbuild -B Rx\rx_sort_fbdataset.lpk
+::@IF %ERRORLEVEL% NEQ 0 ECHO RX (rx_sort_fbdataset.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B Rx\rx_sort_ibx.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO RX (rx_sort_ibx.lpk) >> %Log%
+::%PathToLaz%\lazbuild -B Rx\rx_sort_ibx.lpk
+::@IF %ERRORLEVEL% NEQ 0 ECHO RX (rx_sort_ibx.lpk) >> %Log%
 
 %PathToLaz%\lazbuild -B Rx\rx_sort_sqldb.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO RX (rx_sort_sqldb.lpk) >> %Log%
@@ -248,42 +289,49 @@ tar -xf %ZipDir%\RX.zip Rx
 @IF /I "%Package%"=="RX" GOTO :done
 
 :HashLib
+RMDIR /s /Q HashLib
 tar -xf %ZipDir%\HashLib.zip HashLib
-%PathToLaz%\lazbuild -B HashLib\src\Packages\FPC\HashLib4PascalPackage.lpk
+%PathToLaz%\lazbuild -B HashLib\HashLib\src\Packages\FPC\HashLib4PascalPackage.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO HashLib (HashLib4PascalPackage.lpk) >> %Log%
 @IF /I "%Package%"=="HashLib" GOTO :done
 
 :pl_Win_DirectX
+RMDIR /s /Q ct4laz\pl_win_DirectX
 tar -xf %ZipDir%\pl_Win_DirectX.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_win_directx\pl_win_directx.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_Win_DirectX (pl_win_directx.lpk) >> %Log%
 @IF /I "%Package%"=="pl_Win_DirectX" GOTO :done
 
 :pl_Win_DirectX11
+RMDIR /s /Q ct4laz\pl_win_DirectX11
 tar -xf %ZipDir%\pl_win_DirectX11.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_win_directx11\pl_win_directx11.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_Win_DirectX11 (pl_win_directx11.lpk) >> %Log%
 @IF /I "%Package%"=="pl_Win_DirectX11" GOTO :done
 
 :pl_Win_DirectX12
+RMDIR /s /Q ct4laz\pl_win_DirectX12
 tar -xf %ZipDir%\pl_win_DirectX12.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_win_directx12\pl_win_directx12.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_Win_DirectX12 (pl_win_directx12.lpk) >> %Log%
 @IF /I "%Package%"=="pl_Win_DirectX12" GOTO :done
 
 :pl_Win_DirectXUt
+RMDIR /s /Q ct4laz\pl_win_DirectUt
 tar -xf %ZipDir%\pl_win_DirectXUt.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_win_directxut\pl_win_directxut.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_Win_DirectXUt (pl_win_directxut.lpk) >> %Log%
 @IF /I "%Package%"=="pl_Win_DirectXUt" GOTO :done
 
 :SimpleBaseLib
+RMDIR /s /Q SimpleBaseLib
 tar -xf %ZipDir%\SimpleBaseLib.zip SimpleBaseLib
-%PathToLaz%\lazbuild -B SimpleBaseLib\src\Packages\FPC\SimpleBaseLib4PascalPackage.lpk
+%PathToLaz%\lazbuild -B SimpleBaseLib\SimpleBaseLib\src\Packages\FPC\SimpleBaseLib4PascalPackage.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO SimpleBaseLib (SimpleBaseLib4PascalPackage.lpk) >> %Log%
 @IF /I "%Package%"=="SimpleBaseLib" GOTO :done
 
 :Sdpo
+RMDIR /s /Q Sdpo
 tar -xf %ZipDir%\Sdpo.zip Sdpo
 %PathToLaz%\lazbuild -B Sdpo\SdpoDSM\sdpodsmlaz.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO Sdpo (sdpodsmlaz.lpk)>> %Log%
@@ -298,12 +346,14 @@ tar -xf %ZipDir%\Sdpo.zip Sdpo
 @IF /I "%Package%"=="Sdpo" GOTO :done
 
 :Synapse40.1
+RMDIR /s /Q synapse40.1
 tar -xf %ZipDir%\Synapse40.1.zip synapse40.1
 %PathToLaz%\lazbuild -B synapse40.1\laz_synapse.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO Synapse40.1 (laz_synapse.lpk) >> %Log%
 @IF /I "%Package%"=="Synapse40.1" GOTO :done
 
 :VampyreImaging
+RMDIR /s /Q VampyreImaging
 tar -xf %ZipDir%\VampyreImaging.zip VampyreImaging
 %PathToLaz%\lazbuild -B VampyreImaging\Packages\VampyreImagingPackage.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO VampyreImaging (VampyreImagingPackage.lpk) >> %Log%
@@ -313,22 +363,28 @@ tar -xf %ZipDir%\VampyreImaging.zip VampyreImaging
 
 :ATSynEdit_and_related
 :EncConv
+RMDIR /s /Q EncConv
 tar -xf %ZipDir%\EncConv.zip EncConv
 %PathToLaz%\lazbuild -B EncConv\encconv\encconv_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO EncConv (encconv_package.lpk) >> %Log%
 @IF /I "%Package%"=="EncConv" GOTO :done
 
 :ATFlatControls
-%PathToLaz%\lazbuild -B ATFlatcontrols\atflatcontrols\atflatcontrols_package.lpk
+RMDIR /s /Q ATFlatControls
+tar -xf %ZipDir%\ATFlatControls.zip ATFlatControls
+%PathToLaz%\lazbuild -B ATFlatControls\atflatcontrols\atflatcontrols_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ATFlatControls (atflatcontrols_package.lpk) >> %Log%
 @IF /I "%Package%"=="ATFlatControls" GOTO :done
 
 :ATSynEdit
+RMDIR /s /Q ATSynEdit
+tar -xf %ZipDir%\ATSynEdit.zip ATSynEdit
 %PathToLaz%\lazbuild -B ATSynEdit\atsynedit\atsynedit_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ATSynEdit (atsynedit_package.lpk) >> %Log%
 @IF /I "%Package%"=="ATSynEdit" GOTO :done
 
 :EControl
+RMDIR /s /Q EControl
 tar -xf %ZipDir%\EControl.zip EControl
 %PathToLaz%\lazbuild -B EControl\econtrol\econtrol_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO EControl (econtrol_package.lpk) >> %Log%
@@ -340,16 +396,22 @@ tar -xf %ZipDir%\EControl.zip EControl
 :: ------------------------------ A --------------------------------------------
 
 :Abbrevia
+RMDIR /s /Q Abbrevia
+tar -xf %ZipDir%\Abbrevia.zip Abbrevia
 %PathToLaz%\lazbuild -B Abbrevia\packages\Lazarus\abbrevia.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO Abbrevia (abbrevia.lpk) >> %Log%
 @IF /I "%Package%"=="Abbrevia" GOTO :done
 
 :ABProjectFiles
+RMDIR /s /Q ABProjectFiles
+tar -xf %ZipDir%\ABProjectFiles.zip ABProjectFiles
 %PathToLaz%\lazbuild -B ABProjectFiles\abprojectfiles.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ABProjectFiles (abprojectfiles.lpk) >> %Log%
 @IF /I "%Package%"=="ABProjectFiles" GOTO :done
 
 :ACS
+RMDIR /s /Q acs
+tar -xf %ZipDir%\ACS-AudioComponentsSuite.zip acs
 %PathToLaz%\lazbuild -B acs\packages\laz_acs.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ACS (laz_acs.lpk) >> %Log%
 %PathToLaz%\lazbuild -B acs\packages\laz_acs_lib.lpk
@@ -359,43 +421,59 @@ tar -xf %ZipDir%\EControl.zip EControl
 @IF /I "%Package%"=="ACS" GOTO :done
 
 :ATBinHex
+RMDIR /s /Q ATBinHex
+tar -xf %ZipDir%\ATBinHex.zip ATBinHex
 %PathToLaz%\lazbuild -B ATBinHex\atbinhex\atbinhex_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ATBinHex (atbinhex_package.lpk) >> %Log%
 @IF /I "%Package%"=="ATBinHex" GOTO :done
 
 :ATExtendedDialogs
+RMDIR /S /Q ATExtendedDialogs-master
+tar -xf %ZipDir%\ATExtendedDialogs.zip ATExtendedDialogs-master
 %PathToLaz%\lazbuild -B ATExtendedDialogs-master\atextendeddialogs\atextendeddialogs_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ATExtendedDialogs (atextendeddialogs_package.lpk) >> %Log%
 @IF /I "%Package%"=="ATExtendedDialogs" GOTO :done
 
 :ATFileNotif-Lazarus
 :ATFileNotif
+RMDIR /S /Q ATFileNotif-Lazarus
+tar -xf %ZipDir%\ATFileNotif-Lazarus.zip ATFileNotif-Lazarus
 %PathToLaz%\lazbuild -B ATFileNotif-Lazarus\src\atfilenotif_pkg.lpk
 ) >> %Log%
 @IF /I "%Package%"=="ATFileNotif" GOTO :done
 @IF /I "%Package%"=="ATFileNotif-Lazarus" GOTO :done
 
 :ATImageBox
+RMDIR /S /Q ATImageBox
+tar -xf %ZipDir%\ATImageBox.zip ATImageBox
 %PathToLaz%\lazbuild -B ATImageBox\atimagebox\atimagebox_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ATImageBox (atimagebox_package.lpk) >> %Log%
 @IF /I "%Package%"=="ATImageBox" GOTO :done
 
 :ATShapeLine
+RMDIR /S /Q ATShapeLine
+tar -xf %ZipDir%\ATShapeline.zip ATShapeLine
 %PathToLaz%\lazbuild -B ATShapeLine\atshapeline\atshapeline_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ATShapeLine (atshapeline_package.lpk) >> %Log%
 @IF /I "%Package%"=="ATShapeLine" GOTO :done
 
 :ATSynEdit_Cmp
+RMDIR /S /Q ATSynEdit_Cmp
+tar -xf %ZipDir%\ATSynEdit_Cmp.zip ATSynEdit_Cmp
 %PathToLaz%\lazbuild -B ATSynEdit_Cmp\atsynedit_cmp\atsynedit_cmp_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ATSynEdit_Cmp (atsynedit_cmp_package.lpk) >> %Log%
-@IF /I "%Package%"=="ASynEdit_Cmp" GOTO :done
+@IF /I "%Package%"=="ATSynEdit_Cmp" GOTO :done
 
 :ATSynEdit_Ex
+RMDIR /S /Q ATSynEdit_Ex
+tar -xf %ZipDir%\ATSynEdit_Ex.zip ATSynEdit_Ex
 %PathToLaz%\lazbuild -B ATSynEdit_Ex\atsynedit_ex\atsynedit_ex_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ATSynEdit_Ex (atsynedit_ex_package.lpk) >> %Log%
 @IF /I "%Package%"=="ATSynEdit_Ex" GOTO :done
 
 :AutoSave
+RMDIR /S /Q AutoSave
+tar -xf %ZipDir%\AutoSave.zip AutoSave
 %PathToLaz%\lazbuild -B AutoSave\autosave.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO AutoSave (autosave.lpk) >> %Log%
 @IF /I "%Package%"=="AutoSave" GOTO :done
@@ -404,11 +482,15 @@ tar -xf %ZipDir%\EControl.zip EControl
 :: ------------------------------- B -------------------------------------------
 
 :Bare.Game
+RMDIR /S /Q Bare.Game-master
+tar -xf %ZipDir%\Bare.Game.zip Bare.Game-master
 %PathToLaz%\lazbuild -B Bare.Game-master\source\barerun.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO Bare.Game >> %Log%
 @IF /I "%Package%"=="Bare.Game" GOTO :done
 
 :BGRAControls
+RMDIR /s /Q BGRAControls
+tar -xf %ZipDir%\BGRAControls.zip BGRAControls
 %PathToLaz%\lazbuild -B BGRAControls\bgracontrols.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO BGRAControls (bgracontrols.lpk) >> %Log%
 %PathToLaz%\lazbuild -B BGRAControls\bgrapascalscriptcomponent.lpk
@@ -417,54 +499,72 @@ tar -xf %ZipDir%\EControl.zip EControl
 
 :bgragames-master
 :bgragames
+RMDIR /s /Q bgragames-master
+tar -xf %ZipDir%\bgragames-master.zip bgragames-master
 %PathToLaz%\lazbuild -B bgragames-master\bgragames.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO bgragames-master (bgragames.lpk) >> %Log%
 @IF /I "%Package%"=="bgragames" GOTO :done
 @IF /I "%Package%"=="bgragames-master" GOTO :done
 
 :BitHelpers
+RMDIR /s /Q BitHelpers
+tar -xf %ZipDir%\BitHelpers.zip Bithelpers
 %PathToLaz%\lazbuild -B Bithelpers\bithelpers_pkg.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO Bithelpers (bithelpers_pkg.lpk) >> %Log%
 @IF /I "%Package%"=="BitHelpers" GOTO :done
 
 :Box2D
+RMDIR /s /Q Box2D
+tar -xf %ZipDir%\Box2D.zip Box2D
 %PathToLaz%\lazbuild -B Box2D\Box2d.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO Box2D (Box2d.lpk) >> %Log%
 @IF /I "%Package%"=="Box2D" GOTO :done
 
 :brookframework
-%PathToLaz%\lazbuild -B brookframework\Package\BrookTardigrade.lpk
+RMDIR /s /Q Brookframework
+tar -xf %ZipDir%\Brookframework.zip Brookframework
+%PathToLaz%\lazbuild -B Brookframework\Package\BrookTardigrade.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO brookframework (rookTardigrade.lpk) >> %Log%
 @IF /I "%Package%"=="brookframework" GOTO :done
 
 :brookfreepascal
+RMDIR /s /Q brookfreepascal
+tar -xf %ZipDir%\BrookFreePascal.zip brookfreepascal
 %PathToLaz%\lazbuild -B brookfreepascal\packages\brookrt.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO brookframework (brookrt.lpk) >> %Log%
+@IF %ERRORLEVEL% NEQ 0 ECHO BrookFreePascal (brookrt.lpk) >> %Log%
 %PathToLaz%\lazbuild -B brookfreepascal\packages\brookdt.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO brookframework (brookdt.lpk) >> %Log%
+@IF %ERRORLEVEL% NEQ 0 ECHO BrookFreePascal (brookdt.lpk) >> %Log%
 %PathToLaz%\lazbuild -B brookfreepascal\packages\brookex.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO brookframework (brookex.lpk) >> %Log%
+@IF %ERRORLEVEL% NEQ 0 ECHO BrookFreePascal (brookex.lpk) >> %Log%
 @IF /I "%Package%"=="brookfreepascal" GOTO :done
 
 
 :: --------------------------------- C -----------------------------------------
 
 :CADSys
+RMDIR /s /Q CADSys
+tar -xf %ZipDir%\CadSys42.zip CADSys
 %PathToLaz%\lazbuild -B CADSys\Packages\Lazarus\cadsys.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO CADSys (cadsys.lpk) >> %Log%
 @IF /I "%Package%"=="CADSys" GOTO :done
 
 :callite
+RMDIR /s /Q callite
+tar -xf %ZipDir%\CalLite.zip callite
 %PathToLaz%\lazbuild -B callite\callight_pkg.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO callite (callight_pkg.lpk) >> %Log%
 @IF /I "%Package%"=="callite" GOTO :done
 
 :Captcha
+RMDIR /s /Q Captcha
+tar -xf %ZipDir%\Captcha.zip Captcha
 %PathToLaz%\lazbuild -B Captcha\captcha_pkg.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO Captcha (captcha_pkg.lpk= >> %Log%
 @IF /I "%Package%"=="captcha" GOTO :done
 
 :CastleGameEngine
+RMDIR /s /Q castle-engine-master
+tar -xf %ZipDir%\CastleGameEngine.zip castle-engine-master
 %PathToLaz%\lazbuild -B castle-engine-master\packages\castle_base.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO CastleGameEngine (castle_base.lpk) >> %Log%
 %PathToLaz%\lazbuild -B castle-engine-master\packages\castle_components.lpk
@@ -473,19 +573,25 @@ tar -xf %ZipDir%\EControl.zip EControl
 @IF %ERRORLEVEL% NEQ 0 ECHO CastleGameEngine (castle_window.lpk) >> %Log%
 %PathToLaz%\lazbuild -B castle-engine-master\packages\alternative_castle_window_based_on_lcl.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO CastleGameEngine (alternative_castle_window_based_on_lcl.lpk) >> %Log%
-@IF /I "%Package%"=="CasteGameEngine" GOTO :done
+@IF /I "%Package%"=="CastleGameEngine" GOTO :done
 
 :CEF4Delphi
+RMDIR /s /Q CEF4Delphi
+tar -xf %ZipDir%\CEF4Delphi.zip CEF4Delphi
 %PathToLaz%\lazbuild -B CEF4Delphi\packages\cef4delphi_lazarus.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO CEF4Delphi (cef4delphi_lazarus.lpk) >> %Log%
 @IF /I "%Package%"=="CEF4Delphi" GOTO :done
 
 :CEOSMW
+RMDIR /s /Q ceosmw
+tar -xf %ZipDir%\CeosMW.zip ceosmw
 %PathToLaz%\lazbuild -B ceosmw\ceosmw.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO CEOSMW (ceosmw.lpk) >> %Log%
-@IF /I "%Package%"=="CEPSMW" GOTO :done
+@IF /I "%Package%"=="CEOSMW" GOTO :done
 
 :CGI
+RMDIR /s /Q CGI
+tar -xf %ZipDir%\CGI.zip CGI
 %PathToLaz%\lazbuild -B CGI\cgi.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO CGI (cgi.lpk) >> %Log%
 %PathToLaz%\lazbuild -B CGI\cgiide.lpk
@@ -493,90 +599,117 @@ tar -xf %ZipDir%\EControl.zip EControl
 @IF /I "%Package%"=="CGI" GOTO :done
 
 :ChemText
+RMDIR /s /Q chemtext
+tar -xf %ZipDir%\ChemText.zip chemtext
 %PathToLaz%\lazbuild -B chemtext\laz_chemtext.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ChemText (laz_chemtext.lpk) >> %Log%
 @IF /I "%Package%"=="ChemText" GOTO :done
 
 :chsdet
-%PathToLaz%\lazbuild -B chsdet\chsdet.lpk
+RMDIR /s /Q chsdet
+tar -xf %ZipDir%\chsdet.zip chsdet
+%PathToLaz%\lazbuild -B ChsDet\chsdet.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO chsdet (chsdet.lpk) >> %Log%
 @IF /I "%Package%"=="chsdet" GOTO :done
 
 :cmdline
+RMDIR /s /Q cmdline
+tar -xf %ZipDir%\CmdLine.zip cmdline
 %PathToLaz%\lazbuild -B cmdline\cmdbox.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO cmdline (cmdbox.lpk) >> %Log%
-@IF /I "%Package%"=="cmdbox" GOTO :done
+@IF /I "%Package%"=="cmdline" GOTO :done
 
 :CodeLibrarian
+RMDIR /s /Q CodeLibrarian
+tar -xf %ZipDir%\CodeLibrarian.zip CodeLibrarian
 %PathToLaz%\lazbuild -B CodeLibrarian\codelibrarian.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO Codelibrarian (codelibrarian.lpk) >> %Log%
 @IF /I "%Package%"=="CodeLibrarian" GOTO :done
 
 :CodesigningHelper
+RMDIR /s /Q lazcodesigninghelper-master
+tar -xf %ZipDir%\CodeSigningHelper.zip lazcodesigninghelper-master
 %PathToLaz%\lazbuild -B lazcodesigninghelper-master\source\CodeSigningPackage.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO CodeSigningHelper (CodeSigningPackage.lpj) >> %Log%
 @IF /I "%Package%"=="CodesigningHelper" GOTO :done
 
 :CodeStats
+RMDIR /s /Q CodeStats
+tar -xf %ZipDir%\CodeStats.zip CodeStats
 %PathToLaz%\lazbuild -B CodeStats\CodeStats.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO CodeStats (CodeStats.lpk)>> %Log%
 @IF /I "%Package%"=="CodeStats" GOTO :done
 
 :colorpalette
+RMDIR /s /Q colorpalette
+tar -xf %ZipDir%\colorpalette.zip colorpalette
 %PathToLaz%\lazbuild -B colorpalette\lazcolorpalette.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO colorpalette (lazcolorpalette.lpk) >> %Log%
-@IF /I "%Package%"=="lazcolorpalette" GOTO :done
+@IF /I "%Package%"=="colorpalette" GOTO :done
 
 :cryptini
+RMDIR /s /Q cryptini
+tar -xf %ZipDir%\cryptini.zip cryptini
 %PathToLaz%\lazbuild -B cryptini\cryptini.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO cryptini (cryptini.bak) >> %Log%
 @IF /I "%Package%"=="cryptini" GOTO :done
 
 :CryptoLib4Pascal
-%PathToLaz%\lazbuild -B CryptoLib4Pascal\CryptoLib\src\Packages\FPC\CryptoLib4PascalPackage.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO CryptoLib4Pascal (CryptoLib4PascalPackage.lpk) >> %Log%
+:CryptoLib
+RMDIR /s /Q CryptoLib
+tar -xf %ZipDir%\CryptoLib.zip CryptoLib
+%PathToLaz%\lazbuild -B CryptoLib\CryptoLib\src\Packages\FPC\CryptoLib4PascalPackage.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO CryptoLib (CryptoLib.lpk) >> %Log%
 @IF /I "%Package%"=="CryptoLib4Pascal" GOTO :done
+@IF /I "%Package%"=="CryptoLib" GOTO :done
 
 
 :: -------------------------------------- D ------------------------------------
 
 :DataPort
+RMDIR /s /Q DataPort
 tar -xf %ZipDir%\DataPort.zip DataPort
 %PathToLaz%\lazbuild -B dataport\dataportlasarus.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO DataPort (dataportlasarus.lpk) >> %Log%
 @IF /I "%Package%"=="DataPort" GOTO :done
 
 :DBGridController
+RMDIR /s /Q DBGridController
 tar -xf %ZipDir%\DBGridController.zip DBGridController
 %PathToLaz%\lazbuild -B DBGridController\DBGridController.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO DBGridController (DBGridController.lpk) >> %Log%
 @IF /I "%Package%"=="DBGridController" GOTO :done
 
 :DelphiMoon
+RMDIR /s /Q delphimoon
 tar -xf %ZipDir%\DelphiMoon.zip delphimoon
 %PathToLaz%\lazbuild -B delphimoon\packages\Lazarus\tmoon_laz.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO DelphiMoon (tmoon_laz.lpk) >> %Log%
 @IF /I "%Package%"=="DelphiMoon" GOTO :done
 
 :DExif
+RMDIR /s /Q dexif
 tar -xf %ZipDir%\DExif.zip dexif
 %PathToLaz%\lazbuild -B dexif\dexif_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO DExif (dexif_package.lpk) >> %Log%
 @IF /I "%Package%"=="DExif" GOTO :done
 
 :DMath
+RMDIR /s /Q DMath
 tar -xf %ZipDir%\DMath.zip DMath
 %PathToLaz%\lazbuild -B DMath\DMath.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO DMath (DMath.lpk) >> %Log%
 @IF /I "%Package%"=="DMath" GOTO :done
 
 :dOPF
+RMDIR /s /Q dOPF
 tar -xf %ZipDir%\dOPF.zip dOPF
 %PathToLaz%\lazbuild -B dOPF\packages\dopfrt.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO dOPF (dopfrt.lpk) >> %Log%
 @IF /I "%Package%"=="dOPF" GOTO :done
 
 :DragDrop
+RMDIR /s /Q DragDrop
 tar -xf %ZipDir%\DragDrop.zip DragDrop
 %PathToLaz%\lazbuild -B DragDrop\Source\DragDropLazarus.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO Dragdrop (DragDropLazarus.lpk) >> %Log%
@@ -588,6 +721,7 @@ tar -xf %ZipDir%\DragDrop.zip DragDrop
 :: EControls  ---> already loaded
 
 :Emmet-Pascal
+RMDIR /s /Q Emmet-Pascal
 tar -xf %ZipDir%\Emmet-Pascal.zip Emmet-Pascal
 %PathToLaz%\lazbuild -B Emmet-Pascal\emmet\emmet_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO Emmet-Pascal (emmet_package.lpk) >> %Log%
@@ -596,6 +730,7 @@ tar -xf %ZipDir%\Emmet-Pascal.zip Emmet-Pascal
 :: EncConv ---> already loaded
 
 :epiktimer
+RMDIR /s /Q epiktimer
 tar -xf %ZipDir%\epiktimer.zip epiktimer
 %PathToLaz%\lazbuild -B epiktimer\etpackage.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO epiktimer (etpackage.lpk) >> %Log%
@@ -604,6 +739,7 @@ tar -xf %ZipDir%\epiktimer.zip epiktimer
 @IF /I "%Package%"=="epiktimer" GOTO :done
 
 :EvsSimpleGraph
+RMDIR /s /Q EvsSimpleGraph
 tar -xf %ZipDir%\EvsSimpleGraph.zip EvsSimpleGraph
 %PathToLaz%\lazbuild -B EvsSimpleGraph\package\ugraphrtm.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO EvsSimpleGraph (ugraphrtm.lpk) >> %Log%
@@ -612,6 +748,7 @@ tar -xf %ZipDir%\EvsSimpleGraph.zip EvsSimpleGraph
 @IF /I "%Package%"=="EvsSimpleGraph" GOTO :done
 
 :ExamplePackage
+RMDIR /s /Q ExamplePackage
 tar -xf %ZipDir%\ExamplePackage.zip ExamplePackage
 %PathToLaz%\lazbuild -B ExamplePackage\subcomponent.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ExamplePackage (subcomponent.lpk) >> %Log%
@@ -620,71 +757,77 @@ tar -xf %ZipDir%\ExamplePackage.zip ExamplePackage
 @IF /I "%Package%"=="ExamplePackage" GOTO :done
 
 :ExceptionLogger
+RMDIR /s /Q ExceptionLogger
 tar -xf %ZipDir%\ExceptionLogger.zip ExceptionLogger
 %PathToLaz%\lazbuild -B ExceptionLogger\ExceptionLogger.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ExceptionLogger (ExceptionLogger.lpk) >> %Log%
 @IF /I "%Package%"=="ExceptionLogger" GOTO :done
 
 :ExtendedPackages
-tar -xf %ZipDir%\ExtendedPackages.zip Extended
+RMDIR /s /Q ExtendedPackages
+tar -xf %ZipDir%\ExtendedPackages.zip ExtendedPackages
 
-%PathToLaz%\lazbuild -B Extended\lazextcore.lpk
+%PathToLaz%\lazbuild -B ExtendedPackages\lazextcore.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazextcore.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B Extended\lazextbase.lpk
+%PathToLaz%\lazbuild -B ExtendedPackages\lazextbase.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazextbase.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B Extended\lazextbuttons.lpk
+%PathToLaz%\lazbuild -B ExtendedPackages\lazextbuttons.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazextbuttons.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B Extended\lazextcomponents.lpk
+%PathToLaz%\lazbuild -B ExtendedPackages\lazextcomponents.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazextcomponents.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B Extended\lazextcomponentsimg.lpk
+%PathToLaz%\lazbuild -B ExtendedPackages\lazextcomponentsimg.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazextcomponentsimg.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B Extended\lazextcopy.lpk
+%PathToLaz%\lazbuild -B ExtendedPackages\lazextcopy.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazextcopy.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B Extended\lazextpascal.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazextpascal.lpk) >> %Log%
+::%PathToLaz%\lazbuild -B ExtendedPackages\lazextpascal.lpk
+::@IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazextpascal.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B Extended\lazextinit.lpk
+%PathToLaz%\lazbuild -B ExtendedPackages\lazextinit.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazextinit.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B Extended\lazextnet.lpk
+%PathToLaz%\lazbuild -B ExtendedPackages\lazextnet.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazextnet.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B Extended\lazextnumeric.lpk
+%PathToLaz%\lazbuild -B ExtendedPackages\lazextnumeric.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazextnumeric.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B Extended\lazextreports.lpk
+%PathToLaz%\lazbuild -B ExtendedPackages\lazextreports.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazextreports.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B Extended\lazextweb.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazextweb.lpk) >> %Log%
+%PathToLaz%\lazbuild -B ExtendedPackages\lazexpertsuperform.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazexpertsuperform.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B Extended\lazextwebbase.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazextwebbase.lpk) >> %Log%
+::%PathToLaz%\lazbuild -B ExtendedPackages\lazextweb.lpk
+::@IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazextweb.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B Extended\lazregisterdbnet.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazregisterdbnet.lpk) >> %Log%
+::%PathToLaz%\lazbuild -B ExtendedPackages\lazextwebbase.lpk
+::@IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazextwebbase.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B Extended\lazregisterdbnetserver.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazregisterdbnetserver.lpk) >> %Log%
+::%PathToLaz%\lazbuild -B ExtendedPackages\lazregisterdbnet.lpk
+::@IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazregisterdbnet.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B Extended\lazregisterextcomp.lpk
+::%PathToLaz%\lazbuild -B ExtendedPackages\lazregisterdbnetserver.lpk
+::@IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazregisterdbnetserver.lpk) >> %Log%
+
+%PathToLaz%\lazbuild -B ExtendedPackages\lazregisterextcomp.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazregisterextcomp.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B Extended\lazregisteribx.lpk
+%PathToLaz%\lazbuild -B ExtendedPackages\lazregisteribx.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazregisteribx.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B Extended\lazregisterzeos.lpk
+%PathToLaz%\lazbuild -B ExtendedPackages\lazregisterzeos.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ExtendedPackages (lazregisterzeos.lpk) >> %Log%
 
 @IF /I "%Package%"=="ExtendedPackages" GOTO :done
 
 :ExtraSyn
+RMDIR /s /Q extrasyn
 tar -xf %ZipDir%\ExtraSyn.zip extrasyn
 %PathToLaz%\lazbuild -B extrasyn\extrahighlighters.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ExtraSyn (extrahighlighers.lpk) >> %Log%
@@ -693,6 +836,7 @@ tar -xf %ZipDir%\ExtraSyn.zip extrasyn
 @IF /I "%Package%"=="ExtraSyn" GOTO :done
 
 :EyeCandyControls
+RMDIR /s /Q EC_Controls
 tar -xf %ZipDir%\EyeCandyControls.zip EC_Controls
 %PathToLaz%\lazbuild -B EC_Controls\EC_Controls\eccontrols.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO EyeCandyControls (eccontrols.lpk) >> %Log%
@@ -703,8 +847,9 @@ tar -xf %ZipDir%\EyeCandyControls.zip EC_Controls
 
 :: FBIntf (already handled)
 
-:FileAssociation-mater
+:FileAssociation-master
 :FileAssociation
+RMDIR /s /Q FileAssociation-master
 tar -xf %ZipDir%\FileAssociation-master.zip FileAssociation-master
 %PathToLaz%\lazbuild -B FileAssociation-master\fileassociation.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO FileAssociation-master (fileassociation.lpk) >> %Log%
@@ -712,30 +857,35 @@ tar -xf %ZipDir%\FileAssociation-master.zip FileAssociation-master
 @IF /I "%Package%"=="FileAssociation-master" GOTO :done
 
 :FileMenuHandler
+RMDIR /s /Q FileMenuHandler
 tar -xf %ZipDir%\FileMenuHandler.zip FileMenuHandler
 %PathToLaz%\lazbuild -B FileMenuHandler\FileMenuHandler.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO FileMenuHandler (FileMenuHandler.lpk) >> %Log%
 @IF /I "%Package%"=="FileMenuHandler" GOTO :done
 
 :FitGrids
+RMDIR /s /Q fitgrids-master
 tar -xf %ZipDir%\FitGrids.zip fitgrids-master
 %PathToLaz%\lazbuild -B fitgrids-master\FitGrids.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO FitGrids (FitGrids.lpk)>> %Log%
 @IF /I "%Package%"=="FitGrids" GOTO :done
 
 :FlagPackage
+RMDIR /s /Q flagcomponent
 tar -xf %ZipDir%\FlagPackage.zip flagcomponent
 %PathToLaz%\lazbuild -B flagcomponent\flagpackage.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO FlagPackage (flagpackage.lpk) >> %Log%
 @IF /I "%Package%"=="FlagPackage" GOTO :done
 
 :Fortes4Lazarus
-tar -xf %ZipDir%\Fortes4Lazarus.zip "fortes4lazarus 3.24"
-%PathToLaz%\lazbuild -B "fortes4lazarus 3.24\fortes324forlaz.lpk"
+RMDIR /s /Q Fortes4Lazarus
+tar -xf %ZipDir%\Fortes4Lazarus.zip "Fortes4Lazarus"
+%PathToLaz%\lazbuild -B "Fortes4Lazarus\fortes324forlaz.lpk"
 @IF %ERRORLEVEL% NEQ 0 ECHO Fortes4Lazarus (fortes324forlaz.lpk) >> %Log%
 @IF /I "%Package%"=="Fortes4Lazarus" GOTO :done
 
 :FortesReport-CE
+RMDIR /s /Q fortesreport-ce4
 tar -xf %ZipDir%\FortesReport-CE.zip fortesreport-ce4
 %PathToLaz%\lazbuild -B fortesreport-ce4\Packages\frce.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO FortesReport-CE (frce.lpk) >> %Log%
@@ -743,18 +893,21 @@ tar -xf %ZipDir%\FortesReport-CE.zip fortesreport-ce4
 
 :FpStax
 :: needed by FpOdf
+RMDIR /s /Q fpStax
 tar -xf %ZipDir%\FpStax.zip fpStax
 %PathToLaz%\lazbuild -B fpStax\Stax-package\Stax.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO FpStax (stax.lpk) >> %Log%
 @IF /I "%Package%"=="FpStax" GOTO :done
 
 :FpOdf
+RMDIR /s /Q fpOdf
 tar -xf %ZipDir%\FpOdf.zip fpOdf
 %PathToLaz%\lazbuild -B fpOdf\package\fpodf.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO FpOdf (fpodf.lpj) >> %Log%
 @IF /I "%Package%"=="FpOdf" GOTO :done
 
 :FpTelegram
+RMDIR /s /Q FpTelegram
 tar -xf %ZipDir%\FpTelegram.zip FpTelegram
 %PathToLaz%\lazbuild -B FpTelegram\fptelegram.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO FpTelegram (fptelegram.lpk) >> %Log%
@@ -763,6 +916,7 @@ tar -xf %ZipDir%\FpTelegram.zip FpTelegram
 @IF /I "%Package%"=="FpTelegram" GOTO :done
 
 :fp-tera-tpl
+RMDIR /s /Q fp-tera-tpl
 tar -xf %ZipDir%\fp-tera-tpl.zip fp-tera-tpl
 %PathToLaz%\lazbuild -B fp-tera-tpl\packages\Lazarus\fp_tera_tpl.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO fp-tera-tpl (fp_tera_tpl.lpk) >> %Log%
@@ -771,12 +925,14 @@ tar -xf %ZipDir%\fp-tera-tpl.zip fp-tera-tpl
 :: -------------------------------------- G ------------------------------------
 
 :GDIPlus
+RMDIR /s /Q GDIPlus
 tar -xf %ZipDir%\GDIPlus.zip GDIPlus
 %PathToLaz%\lazbuild -B GDIPlus\packages\lazarus\lazgdiplus.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO GDIPlus (lazgdiplus.lpk) >> %Log%
 @IF /I "%Package%"=="GDIPlus" GOTO :done
 
 :GifAnim
+RMDIR /s /Q gifanim
 tar -xf %ZipDir%\GifAnim.zip gifanim
 %PathToLaz%\lazbuild -B gifanim\pkg_gifanim.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO GifAnim (pkg_gifanim.lpk) >> %Log%
@@ -785,12 +941,14 @@ tar -xf %ZipDir%\GifAnim.zip gifanim
 @IF /I "%Package%"=="GifAnim" GOTO :done
 
 :GIFViewer
+RMDIR /s /Q gifviewer
 tar -xf %ZipDir%\GIFViewer.zip TGIFViewer
 %PathToLaz%\lazbuild -B TGIFViewer\package\gifviewer_pkg.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO GIFViewer (gifviewer_pkg.lpk) >> %Log%
 @IF /I "%Package%"=="GIFViewer" GOTO :done
 
 :GLScene
+RMDIR /s /Q GLSceneLCL
 tar -xf %ZipDir%\GLScene.zip GLSceneLCL
 %PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_RunTime.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_RunTime.lpk) >> %Log%
@@ -798,45 +956,49 @@ tar -xf %ZipDir%\GLScene.zip GLSceneLCL
 %PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_DesignTime.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_DesignTime.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_BASS.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_BASS.lpk) >> %Log%
+:: The following sub-packages are included in GLScene, but not implemented.
 
-%PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_CgShader.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_CgShader.lpk) >> %Log%
+::%PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_BASS.lpk
+::@IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_BASS.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_FMOD.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_FMOD.lpk) >> %Log%
+::%PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_CgShader.lpk
+::@IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_CgShader.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_NGD.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_NGD.lpk) >> %Log%
+::%PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_FMOD.lpk
+::@IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_FMOD.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_ODE.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_ODE.lpk) >> %Log%
+::%PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_NGD.lpk
+::@IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_NGD.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_OpenAL.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_OpenAL.lpk) >> %Log%
+::%PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_ODE.lpk
+::@IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_ODE.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_Physic_native.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_Physic_native.lpk) >> %Log%
+::%PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_OpenAL.lpk
+::@IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_OpenAL.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_Physic_newton.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_Physic_newton.lpk) >> %Log%
+::%PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_Physic_native.lpk
+::@IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_Physic_native.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_SDL.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_SCL.lpk) >> %Log%
+::%PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_Physic_newton.lpk
+::@IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_Physic_newton.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_WinOnly.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_WinOnly.lpk) >> %Log%
+::%PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_SDL.lpk
+::@IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_SCL.lpk) >> %Log%
 
-@IF /I "%Package%"=="SLScene" GOTO :done
+::%PathToLaz%\lazbuild -B GLSceneLCL\Packages\GLScene_WinOnly.lpk
+::@IF %ERRORLEVEL% NEQ 0 ECHO GLScene (GLScene_WinOnly.lpk) >> %Log%
+
+@IF /I "%Package%"=="GLScene" GOTO :done
 
 :GoldParser
+RMDIR /s /Q GOLDParser
 tar -xf %ZipDir%\GoldParser.zip GOLDParser
 %PathToLaz%\lazbuild -B GOLDParser\src\gold_parser_5.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO GoldParser (gold_parser_5.lpk) >> %Log%
 @IF /I "%Package%"=="GoldParser" GOTO :done
 
 :GridPrinter
+RMDIR /s /Q GridPrinter
 tar -xf %ZipDir%\GridPrinter.zip GridPrinter
 %PathToLaz%\lazbuild -B GridPrinter\gridprinterpkg.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO GridPrinter (gridprinterpkg.lpk) >> %Log%
@@ -846,18 +1008,21 @@ tar -xf %ZipDir%\GridPrinter.zip GridPrinter
 :: -------------------------------------- H ------------------------------------
 
 :Hidapi
-tar -xf %ZipDir%\Hidapi.zip HIDAPI
-%PathToLaz%\lazbuild -B HIDAPI\src\hidapi_pkg.lpk
+RMDIR /s /Q Hidapi
+tar -xf %ZipDir%\Hidapi.zip Hidapi
+%PathToLaz%\lazbuild -B Hidapi\src\hidapi_pkg.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO Hidapi (hidapi_pkg.lpk) >> %Log%
 @IF /I "%Package%"=="Hidapi" GOTO :done
 
 :HistoryFiles
+RMDIR /s /Q HistoryFiles
 tar -xf %ZipDir%\HistoryFiles.zip HistoryFiles
 %PathToLaz%\lazbuild -B HistoryFiles\HistoryLazarus.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO HistoryFiles (HistoryLazarus.lpk) >> %Log%
 @IF /I "%Package%"=="HistoryFiles" GOTO :done
 
 :HtmlViewer
+RMDIR /s /Q HtmlViewer
 tar -xf %ZipDir%\HtmlViewer.zip HtmlViewer
 %PathToLaz%\lazbuild -B HtmlViewer\package\FrameViewer09.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO HtmlViewer (FrameViewer09.lpk) >> %Log%
@@ -866,44 +1031,31 @@ tar -xf %ZipDir%\HtmlViewer.zip HtmlViewer
 
 :: -------------------------------------- I ------------------------------------
 
-:IBControls
-tar -xf %ZipDir%\IBControls.zip IBControls
-%PathToLaz%\lazbuild -B IBControls\ibcontrols.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO IBCOntrols (ibcontrols.lpk) >> %Log%
-@IF /I "%Package%"=="IBControls" GOTO :done
-
-:IBX4Lazarus
-tar -xf %ZipDir%\IBX4Lazarus.zip IBX4Lazarus
-%PathToLaz%\lazbuild -B IBX4Lazarus\ibexpress.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO IBX4Lazarus (ibexrpess.lpk) >> %Log%
-%PathToLaz%\lazbuild -B IBX4Lazarus\ibexpressconsolemode.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO IBX4Lazarus (ibexrpessconsolemode.lpk) >> %Log%
-%PathToLaz%\lazbuild -B IBX4Lazarus\iblocaldb.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO IBX4Lazarus (iblocaldb.lpk) >> %Log%
-%PathToLaz%\lazbuild -B IBX4Lazarus\iblocalnongui.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO IBX4Lazarus (iblocalnongui.lpk) >> %Log%
-%PathToLaz%\lazbuild -B IBX4Lazarus\ibnongui.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO IBX4Lazarus (ibnongui.lpk) >> %Log%
-%PathToLaz%\lazbuild -B IBX4Lazarus\ibLegacyServices.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO IBX4Lazarus (ibLegacyServices.lpk) >> %Log%
-%PathToLaz%\lazbuild -B IBX4Lazarus\dclibx.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO IBX4Lazarus (dclibx.lpk) >> %Log%
-@IF /I "%Package%"=="IBX4Lazarus" GOTO :done
-
 :IDE-FileManager
+RMDIR /s /Q IDE-FileManager
 tar -xf %ZipDir%\IDE-FileManager.zip IDE-FileManager
 %PathToLaz%\lazbuild -B IDE-FileManager\ide-file-manager\idefilemanager.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO IDE-FileManager (idefilemanager.lpk) >> %Log%
 @IF /I "%Package%"=="IDE-FileManager" GOTO :done
 
+:ImageSVGListDsgn
+RMDir /S /Q ImageSVGListDsgn
+tar -xf %ZipDir%\ImageSVGListDsgn.zip ImageSVGListDsgn
+%PathToLaz%\lazbuild -B ImageSVGListDsgn\imagesvglistdsgn.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO ImageSVGListDsgn (imagesvglistdsgn.lpk) >> %Log%
+@IF /I "%Package%"=="ImageSVGListDsgn" GOTO :done
+
+
 :IndustrialStuff
-tar -xf %ZipDir%\industrialstuff.zip industrialstuff
-%PathToLaz%\lazbuild -B industrialstuff\industrial.lpk
+RMDIR /s /Q IndustrialStuff
+tar -xf %ZipDir%\industrialstuff.zip IndustrialStuff
+%PathToLaz%\lazbuild -B IndustrialStuff\industrial.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO Industrialstuff (industrial.lpk) >> %Log%
 @IF /I "%Package%"=="IndustrialStuff" GOTO :done
 
 :Indy10
 :Indy
+RMDIR /s /Q Indy10
 tar -xf %ZipDir%\Indy10.zip Indy10
 %PathToLaz%\lazbuild -B Indy10\indylaz.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO Indy (indylaz.lpk) >> %Log%
@@ -911,6 +1063,7 @@ tar -xf %ZipDir%\Indy10.zip Indy10
 @IF /I "%Package%"=="Indy" GOTO :done
 
 :IndySecOpenSSL
+RMDIR /s /Q IndySecOpenSSL
 tar -xf %ZipDir%\IndySecOpenSSL.zip IndySecOpenSSL
 %PathToLaz%\lazbuild -B IndySecOpenSSL\lazarus-fpc\IndySecOpenSSL.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO IndySecOpenSSL (IndySecOpenSSL.lpk) >> %Log%
@@ -921,6 +1074,7 @@ tar -xf %ZipDir%\IndySecOpenSSL.zip IndySecOpenSSL
 :: -------------------------------- J ------------------------------------------
 
 :JujiboUtils
+RMDIR /s /Q jujiboutils
 tar -xf %ZipDir%\jujiboutils.zip jujiboutils
 %PathToLaz%\lazbuild -B jujiboutils\jujiboutils.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO JujiboUtils (jujiboutils.lpk) >> %Log%
@@ -932,12 +1086,14 @@ tar -xf %ZipDir%\jujiboutils.zip jujiboutils
 ::-------------------------------------- K -------------------------------------
 
 :KASToolBar
+RMDIR /s /Q KASToolBar
 tar -xf %ZipDir%\KASToolBar.zip KASToolBar
 %PathToLaz%\lazbuild -B KASToolBar\kascomp.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO KASToolbar (kascomp.lpk) >> %Log%
 @IF /I "%Package%"=="KASToolbar" GOTO :done
 
 :KControls
+RMDIR /s /Q kcontrols
 tar -xf %ZipDir%\kcontrols.zip kcontrols
 %PathToLaz%\lazbuild -B kcontrols\packages\kcontrols\kcontrolsbase.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO KControls (kcontrolsbase.lpk) >> %Log%
@@ -946,16 +1102,18 @@ tar -xf %ZipDir%\kcontrols.zip kcontrols
 @IF /I "%Package%"=="KControls" GOTO :done
 
 :KyoukaiFramework
+RMDIR /s /Q kyoukai_framework
 tar -xf %ZipDir%\KyoukaiFramework.zip kyoukai_framework
 %PathToLaz%\lazbuild -B kyoukai_framework\src\packages\kyoukai_standard.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO KyoukaiFramework (kyoukai_standard.lpk) >> %Log%
-@IF /I "%Package%"=="KyoukyaiFramework" GOTO :done
+@IF /I "%Package%"=="KyoukaiFramework" GOTO :done
 
 
 ::-------------------------------------- L -------------------------------------
 
 :lainzcodestudio-master
 :lainzcodestudio
+RMDIR /s /Q lainzcodestudio-master
 tar -xf %ZipDir%\lainzcodestudio-master.zip lainzcodestudio-master
 %PathToLaz%\lazbuild -B lainzcodestudio-master\lcs_package\lcs_package.lpk
 IF %ERRORLEVEL% NEQ 0 ECHO lainzcodestudio-master (lcs_package.lpk) >> %Log%
@@ -963,6 +1121,7 @@ IF %ERRORLEVEL% NEQ 0 ECHO lainzcodestudio-master (lcs_package.lpk) >> %Log%
 @IF /I "%Package%"=="lainzcodestudio-master" GOTO :done
 
 :LAMW
+RMDIR /s /Q LAMW
 tar -xf %ZipDir%\LAMW.zip LAMW
 %PathToLaz%\lazbuild -B LAMW\android_bridges\tfpandroidbridge_pack.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LAMW (tfpandroidbridge_pack.lpk) >> %Log%
@@ -976,38 +1135,44 @@ tar -xf %ZipDir%\LAMW.zip LAMW
 @IF /I "%Package%"=="LAMW" GOTO :done
 
 :Lape
+RMDIR /s /Q Lape
 tar -xf %ZipDir%\Lape.zip Lape
 %PathToLaz%\lazbuild -B Lape\package\lape.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO Lape (lape.lpk) >> %Log%
 @IF /I "%Package%"=="Lape" GOTO :done
 
 :LazarusAppExplore
+RMDIR /s /Q "Lazarus AppExplore"
 tar -xf %ZipDir%\LazarusAppExplore.zip "Lazarus AppExplore"
 %PathToLaz%\lazbuild -B "Lazarus AppExplore\appexplore.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LazarusAppExplore (appexplore.lpk) >> %Log%
 @IF /I "%Package%"=="LazarusAppExplore" GOTO :done
 
 :LazAutoUpdate
+RMDIR /s /Q lazautoupdate
 tar -xf %ZipDir%\LazAutoUpdate.zip lazautoupdate
 %PathToLaz%\lazbuild -B lazautoupdate\lazupdate.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LazAutoUpdate (lazupdate.lpk) >> %Log%
 @IF /I "%Package%"=="LazAutoUpdate" GOTO :done
 
 :LazBarcodes
-tar -xf %ZipDir%\LazBarcodes.zip lazbarcodes
-%PathToLaz%\lazbuild -B lazbarcodes\packages\lazbarcodes_runtimeonly.lpk
+RMDIR /s /Q LazBarcodes
+tar -xf %ZipDir%\LazBarcodes.zip LazBarcodes
+%PathToLaz%\lazbuild -B LazBarcodes\packages\lazbarcodes_runtimeonly.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LazBarcodes (lazbarcodes_runtimeonly.lpk) >> %Log%
-%PathToLaz%\lazbuild -B lazbarcodes\packages\lazbarcodes.lpk
+%PathToLaz%\lazbuild -B LazBarcodes\packages\lazbarcodes.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LazBarcodes (lazbarcodes.lpk) >> %Log%
 @IF /I "%Package%"=="LazBarcodes" GOTO :done
 
 :LazIdeSearchPanel
+RMDIR /s /Q LazIdeSearchPanel
 tar -xf %ZipDir%\LazIdeSearchPanel.zip LazIdeSearchPanel
 %PathToLaz%\lazbuild -B LazIdeSearchPanel\idesearchpanelp.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LazIdeSearchPanel (idesearchPanel.lpk) >> %Log%
 @IF /I "%Package%"=="LazIdeSearchPanel" GOTO :done
 
 :LazLightFileStream
+RMDIR /s /Q LazLightFileStream
 tar -xf %ZipDir%\LazLightFileStream.zip LazLightFileStream
 %PathToLaz%\lazbuild -B LazLightFileStream\LazLightFileStream.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LazLightFileStream (LazLightFileStream.lpk) >> %Log%
@@ -1015,70 +1180,80 @@ tar -xf %ZipDir%\LazLightFileStream.zip LazLightFileStream
 
 :LazRGBGraphics 
 :: needed by LazMapViewer
+RMDIR /s /Q LazRGBGraphics
 tar -xf %ZipDir%\LazRGBGraphics.zip LazRGBGraphics
 %PathToLaz%\lazbuild -B LazRGBGraphics\lazrgbgraphics.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LazRGBGraphics (lazrgbgraphics.lpk) >> %Log%
 @IF /I "%Package%"=="LazRGBGraphics" GOTO :done
 
 :LazMapViewer
+RMDIR /s /Q LazMapViewer
 tar -xf %ZipDir%\LazMapViewer.zip LazMapViewer
-%PathToLaz%\lazbuild -B LazMapViewer\LazMapViewer\lazmapviewerpkg.lpk
+%PathToLaz%\lazbuild -B LazMapViewer\lazmapviewerpkg.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LazMapViewer (lazmapviewerpkg.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B LazMapViewer\LazMapViewer\lazmapviewer_synapse.lpk
+%PathToLaz%\lazbuild -B LazMapViewer\lazmapviewer_synapse.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LazMapViewer (lazmapviewer_synapse.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B LazMapViewer\LazMapViewer\lazmapviewer_bgra.lpk
+%PathToLaz%\lazbuild -B LazMapViewer\lazmapviewer_bgra.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LazMapViewer (lazmapviewer_bgra.lpk) >> %Log%
 
-%PathToLaz%\lazbuild -B LazMapViewer\LazMapViewer\lazmapviewer_rgbgraphics.lpk
+%PathToLaz%\lazbuild -B LazMapViewer\lazmapviewer_rgbgraphics.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LazMapViewer (lazmapviewer_rgbgraphics.lpk) >> %Log%
 
 @IF /I "%Package%"=="LazMapViewer" GOTO :done
 
 :LazProfiler
+RMDIR /s /Q lazprofiler
 tar -xf %ZipDir%\LazProfiler.zip lazprofiler
 %PathToLaz%\lazbuild -B lazprofiler\LazProfiler.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LazProfiler (LazProfiler.lpk)  >> %Log%
 @IF /I "%Package%"=="LazProfiler" GOTO :done
 
 :LazQuadTree
+RMDIR /s /Q LazQuadTree
 tar -xf %ZipDir%\LazQuadTree.zip LazQuadTree
 %PathToLaz%\lazbuild -B LazQuadTree\lazquadtree.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LazQuadTree (lazquadtree.lpk) >> %Log%
 @IF /I "%Package%"=="LazQuadTree" GOTO :done
 
 :LazRichView
+RMDIR /s /Q lazrichview
 tar -xf %ZipDir%\LazRichView.zip lazrichview
 %PathToLaz%\lazbuild -B lazrichview\lazrichview.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LazRichView (lazrichview.lpk) >> %Log%
 @IF /I "%Package%"=="LazRichView" GOTO :done
 
 :LazSerial
+RMDIR /s /Q LazSerial
 tar -xf %ZipDir%\LazSerial.zip LazSerial
 %PathToLaz%\lazbuild -B LazSerial\lazserialport.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LazSerial (lazserialport.lpk) >> %Log%
 @IF /I "%Package%"=="LazSerial" GOTO :done
 
 :LCLExtensions
+RMDIR /s /Q lclextensions
 tar -xf %ZipDir%\LCLExtensions.zip lclextensions
 %PathToLaz%\lazbuild -B lclextensions\lclextensions_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LCLExtensions (lclextensions_package.lpk) >> %Log%
 @IF /I "%Package%"=="LCLExtensions" GOTO :done
 
 :LGenerics
+RMDIR /s /Q LGenerics
 tar -xf %ZipDir%\LGenerics.zip LGenerics
 %PathToLaz%\lazbuild -B LGenerics\lgenerics\lgenerics.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LGenerics (lgenerics.lpk) >> %Log%
 @IF /I "%Package%"=="LGenerics" GOTO :done
 
 :Lists
+RMDIR /s /Q Lists
 tar -xf %ZipDir%\Lists.zip Lists
 %PathToLaz%\lazbuild -B Lists\lists.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO Lists (lists.lpk) >> %Log%
 @IF /I "%Package%"=="Lists" GOTO :done
 
 :LNet
+RMDIR /s /Q lnet
 tar -xf %ZipDir%\LNet.zip lnet
 %PathToLaz%\lazbuild -B lnet\lazaruspackage\lnetbase.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LNet (lnetbase.lpk) >> %Log%
@@ -1087,20 +1262,22 @@ tar -xf %ZipDir%\LNet.zip lnet
 @IF /I "%Package%"=="LNet" GOTO :done
 
 :LongTimer
+RMDIR /s /Q longtimer
 tar -xf %ZipDir%\LongTimer.zip longtimer
 %PathToLaz%\lazbuild -B longtimer\longtimerpackage.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LongTimer (longtimerpackage.lpk) >> %Log%
 @IF /I "%Package%"=="LongTimer" GOTO :done
 
 :LrBarcodesEx
+RMDIR /s /Q LrBarcodesEx
 tar -xf %ZipDir%\LrBarcodesEx.zip LrBarcodesEx
 %PathToLaz%\lazbuild -B LrBarcodesEx\lr_barcodesex.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LrBarCodesEx (lr_barcodesex.lpk) >> %Log%
 @IF /I "%Package%"=="LrBarCodesEx" GOTO :done
 
 :LuiPack
+RMDIR /s /Q luipack
 tar -xf %ZipDir%\LuiPack.zip luipack
-
 %PathToLaz%\lazbuild -B luipack\vtvextras\virtualdbgrid\virtualdbgrid_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO LuiPack (vtvextras virtualdbgrid_package.lpk) >> %Log%
 
@@ -1189,20 +1366,23 @@ tar -xf %ZipDir%\LuiPack.zip luipack
 ::-------------------------------------- M -------------------------------------
 
 :MBColorLib
-tar -xf %ZipDir%\MBColorLib.zip mbColorLib
-%PathToLaz%\lazbuild -B mbColorLib\mbcolorliblaz.lpk
+RMDIR /s /Q MBColorLib
+tar -xf %ZipDir%\MBColorLib.zip MBColorLib
+%PathToLaz%\lazbuild -B MBColorLib\mbcolorliblaz.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO MBColorLib (mbcolorliblaz.lpk) >> %Log%
 @IF /I "%Package%"=="MBColorLib" GOTO :done
 
 :Metadarkstyle
-tar -xf %ZipDir%\Metadarkstyle.zip Metadarkstyle
-%PathToLaz%\lazbuild -B Metadarkstyle\metadarkstyle.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO Metadarkstyle (metadarkstyle.lpk) >> %Log%
-%PathToLaz%\lazbuild -B Metadarkstyle\metadarkstyledsgn.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO Metadarkstyle (metadarkstyledsgn.lpk) >> %Log%
+RMDIR /s /Q MetadarkStyle
+tar -xf %ZipDir%\Metadarkstyle.zip MetaDarkStyle
+%PathToLaz%\lazbuild -B MetaDarkStyle\metadarkstyle.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO MetaDarkStyle (metadarkstyle.lpk) >> %Log%
+%PathToLaz%\lazbuild -B MetaDarkStyle\metadarkstyledsgn.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO MetaDarkStyle (metadarkstyledsgn.lpk) >> %Log%
 @IF /I "%Package%"=="Metadarkstyle" GOTO :done
 
 :MORMot
+RMDIR /s /Q mORMot
 tar -xf %ZipDir%\MORMot.zip mORMot
 %PathToLaz%\lazbuild -B mORMot\packages\mormot_base.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO MORMot (mormot_base.lpk) >> %Log%
@@ -1211,6 +1391,7 @@ tar -xf %ZipDir%\MORMot.zip mORMot
 @IF /I "%Package%"=="MORMot" GOTO :done
 
 :MORMot2
+RMDIR /s /Q mORMot2
 tar -xf %ZipDir%\MORMot2.zip mORMot2
 %PathToLaz%\lazbuild -B mORMot2\packages\lazarus\mormot2.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO MORMot2 (mormot2.lpk) >> %Log%
@@ -1220,6 +1401,7 @@ tar -xf %ZipDir%\MORMot2.zip mORMot2
 
 :mplayer0.1.2
 :mplayer
+RMDIR /s /Q mplayer0.1.2
 tar -xf %ZipDir%\mplayer0.1.2.zip mplayer0.1.2
 %PathToLaz%\lazbuild -B mplayer0.1.2\mplayercontrollaz.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO mplayer0.1.2 mplayercontrollaz.lpk) >> %Log%
@@ -1227,12 +1409,14 @@ tar -xf %ZipDir%\mplayer0.1.2.zip mplayer0.1.2
 @IF /I "%Package%"=="mplayer0.1.2" GOTO :done
 
 :MultiLog
+RMDIR /s /Q MultiLog
 tar -xf %ZipDir%\MultiLog.zip MultiLog
 %PathToLaz%\lazbuild -B MultiLog\multiloglaz.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO MultiLog (multiloglaz.lpk) >> %Log%
 @IF /I "%Package%"=="MultiLog" GOTO :done
 
 :MultithreadProcs
+RMDIR /s /Q multithreadprocs
 tar -xf %ZipDir%\MultithreadProcs.zip multithreadprocs
 %PathToLaz%\lazbuild -B multithreadprocs\multithreadprocslaz.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO multithreadprocs /multithreadprocslaz.lpk) >> %Log%
@@ -1242,30 +1426,35 @@ tar -xf %ZipDir%\MultithreadProcs.zip multithreadprocs
 ::-------------------------------------- N -------------------------------------
 
 :NiceChart
+RMDIR /s /Q NiceChart
 tar -xf %ZipDir%\NiceChart.zip NiceChart
 %PathToLaz%\lazbuild -B NiceChart\packages\Lazarus\nicechartlaz.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO NiceChart (nicechartlaz.lpk)>> %Log%
 @IF /I "%Package%"=="NiceChart" GOTO :done
 
 :NiceGrid
+RMDIR /s /Q NiceGrid
 tar -xf %ZipDir%\NiceGrid.zip NiceGrid
 %PathToLaz%\lazbuild -B NiceGrid\packages\Lazarus\NiceGridLaz.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO NiceGrid (NiceGridLaz.lpk) >> %Log%
 @IF /I "%Package%"=="NiceGrid" GOTO :done
 
 :nicesidebar
+RMDIR /s /Q nicesidebar
 tar -xf %ZipDir%\nicesidebar.zip nicesidebar
 %PathToLaz%\lazbuild -B nicesidebar\packages\Lazarus\nicesidebarlaz.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO nicesidebar (nicesidebarlaz.lpk) >> %Log%
 @IF /I "%Package%"=="nicesidebar" GOTO :done
 
 :NotepadppPlugin
+RMDIR /s /Q NotepadppPlugin
 tar -xf %ZipDir%\NotepadppPlugin.zip NotepadppPlugin
 %PathToLaz%\lazbuild -B NotepadppPlugin\notepadppplugin.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO NotepadppPlugin (notepadppplugin.lpk) >> %Log%
 @IF /I "%Package%"=="NotepadppPlugin" GOTO :done
 
 :NumCPULib
+RMDIR /s /Q NumCPULib
 tar -xf %ZipDir%\NumCPULib.zip NumCPULib
 %PathToLaz%\lazbuild -B NumCPULib\src\Packages\FPC\NumCPULib4PascalPackage.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO NumCPULib (NumCPULib4PascalPackage.lpk) >> %Log%
@@ -1275,22 +1464,25 @@ tar -xf %ZipDir%\NumCPULib.zip NumCPULib
 ::-------------------------------------- O -------------------------------------
 
 :OAuth2Client
+RMDIR /s /Q OAuth2Client
 tar -xf %ZipDir%\OAuth2Client.zip OAuth2Client
 %PathToLaz%\lazbuild -B OAuth2Client\oauth2_laz.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO OAuth2client (oauth2_laz.lpk) >> %Log%
 @IF /I "%Package%"=="OAuth2Client" GOTO :done
 
 :OnGuard
+RMDIR /s /Q OnGuard
 tar -xf %ZipDir%\OnGuard.zip OnGuard
 %PathToLaz%\lazbuild -B onGuard\packages\tponguard.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO OnGuard (tponguard.lpk)>> %Log%
-%PathToLaz%\lazbuild -B onGuard\packages\tponguard_fpgui.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO OnGuard (tponguard_fpgui.lpk)>> %Log%
+::%PathToLaz%\lazbuild -B onGuard\packages\tponguard_fpgui.lpk
+::@IF %ERRORLEVEL% NEQ 0 ECHO OnGuard (tponguard_fpgui.lpk)>> %Log%
 %PathToLaz%\lazbuild -B onGuard\packages\tponguard_design.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO OnGuard (tponguard.design)>> %Log%
 @IF /I "%Package%"=="OnGuard" GOTO :done
 
 :OpenGPSX
+RMDIR /s /Q opengpsx
 tar -xf %ZipDir%\OpenGPSX.zip opengpsx
 %PathToLaz%\lazbuild -B opengpsx\opengpsx.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO OpenGPSX (opengpsx.lpk)>> %Log%
@@ -1321,14 +1513,16 @@ tar -xf %ZipDir%\openssl-3.0.12-x64_86-win64.zip
 @IF /I "%Package%"=="openssl-3.0.12-x64_86-win64" GOTO :done
 
 :OpenWeatherMap
+RMDIR /s /Q OpenWeatherMap
 tar -xf %ZipDir%\OpenWeatherMap.zip OpenWeatherMap
 %PathToLaz%\lazbuild -B OpenWeatherMap\fpowm.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO OpenWeatherMap (fpowm.lpk)>> %Log%
 @IF /I "%Package%"=="OpenWeatherMap" GOTO :done
 
 :Orpheus
-tar -xf %ZipDir%\Orpheus.zip orpheus
-%PathToLaz%\lazbuild -B orpheus\orpheus.lpk
+RMDIR /s /Q Orpheus
+tar -xf %ZipDir%\Orpheus.zip Orpheus
+%PathToLaz%\lazbuild -B Orpheus\orpheus.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO Orpheus (orpheus.lpk)>> %Log%
 @IF /I "%Package%"=="Orpheus" GOTO :done
 
@@ -1336,12 +1530,14 @@ tar -xf %ZipDir%\Orpheus.zip orpheus
 ::-------------------------------------- P -------------------------------------
 
 :PascalContainer
+RMDIR /s /Q PascalContainer
 tar -xf %ZipDir%\PascalContainer.zip PascalContainer
 %PathToLaz%\lazbuild -B PascalContainer\packages\pascalcontainer.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO PascalContainer (pascalcontainer.lpk)>> %Log%
 @IF /I "%Package%"=="PascalContainer" GOTO :done
 
 :PascalSCADA
+RMDIR /s /Q PascalSCADA
 tar -xf %ZipDir%\PascalSCADA.zip PascalSCADA
 %PathToLaz%\lazbuild -B PascalSCADA\pascalscada_common.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO PascalSCADA (pascalscada_common.lpk)>> %Log%
@@ -1364,66 +1560,77 @@ tar -xf %ZipDir%\PascalSCADA.zip PascalSCADA
 @IF /I "%Package%"=="PascalSCADA" GOTO :done
 
 :PascalTZ
+RMDIR /s /Q PascalTZ
 tar -xf %ZipDir%\PascalTZ.zip PascalTZ
 %PathToLaz%\lazbuild -B PascalTZ\package\pascaltz.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO PascalTZ (pascaltz.lpk)>> %Log%
 @IF /I "%Package%"=="PascalTZ" GOTO :done
 
 :PasMP
+RMDIR /s /Q pasmp
 tar -xf %ZipDir%\PasMP.zip pasmp
 %PathToLaz%\lazbuild -B pasmp\lazpasmp.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO PasMP (lazpasmp.lpk)>> %Log%
 @IF /I "%Package%"=="PasMP" GOTO :done
 
 :pl_0_libs
+RMDIR /s /Q ct4laz\pl_components\pl_0_libs
 tar -xf %ZipDir%\pl_0_libs.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_0_libs\pl_0_libs.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_0_libs (pl_0_libs.lpk)>> %Log%
 @IF /I "%Package%"=="pl_0_libs" GOTO :done
 
 :pl_APE
+RMDIR /s /Q ct4laz\pl_components\pl_apelib
 tar -xf %ZipDir%\pl_APE.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_apelib\pl_apelib.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_APE (pl_APE_libs.lpk)>> %Log%
 @IF /I "%Package%"=="pl_APE" GOTO :done
 
 :pl_AsioVST
+RMDIR /s /Q ct4laz\pl_components\pl_asiovst
 tar -xf %ZipDir%\pl_AsioVST.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_asiovst\pl_asiovst.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_AsioVST (pl_asiobst.lpk)>> %Log%
 @IF /I "%Package%"=="pl_AsioVST" GOTO :done
 
 :pl_Cindy
+RMDIR /s /Q ct4laz\pl_components\pl_cindy
 tar -xf %ZipDir%\pl_Cindy.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_cindy\pl_cindy.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_Cindy (pl_cindy.lpk)>> %Log%
 @IF /I "%Package%"=="pl_Cindy" GOTO :done
 
 :pl_ExCompress
+RMDIR /s /Q ct4laz\pl_components\pl_excompress
 tar -xf %ZipDir%\pl_ExCompress.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_excompress\pl_excompress.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_ExCompress (pl_excompress.lpk)>> %Log%
 @IF /I "%Package%"=="pl_Excompress" GOTO :done
 
 :pl_ExControls
+RMDIR /s /Q ct4laz\pl_components\pl_excontrols
 tar -xf %ZipDir%\pl_ExControls.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_excontrols\pl_excontrols.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_ExConctrols (pl_excontrols.lpk)>> %Log%
 @IF /I "%Package%"=="pl_ExControls" GOTO :done
 
 :pl_ExDatabase
+RMDIR /s /Q ct4laz\pl_components\pl_exdatabase
 tar -xf %ZipDir%\pl_ExDatabase.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_exdatabase\pl_exdatabase.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_ExDatabase (pl_exdatabase.lpk)>> %Log%
 @IF /I "%Package%"=="pl_ExDatabase" GOTO :done
 
 :pl_Graphics32
+RMDIR /s /Q ct4laz\pl_components\pl_graphics32
 tar -xf %ZipDir%\pl_Graphics32.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_graphics32\pl_graphics32.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_Graphics32 (pl_graphics32.lpk)>> %Log%
 @IF /I "%Package%"=="pl_Graphics32" GOTO :done
 
 :pl_Graphics32EXT
+RMDIR /s /Q ct4laz\pl_components\pl_graphics32ext
 tar -xf %ZipDir%\pl_Graphics32EXT.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_graphics32ext\pl_graphics32ext.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_Graphics32Ext (pl_graphics32ext.lpk)>> %Log%
@@ -1431,138 +1638,161 @@ tar -xf %ZipDir%\pl_Graphics32EXT.zip ct4laz
 
 :pl_Graphics32VPR
 :: needed by pl_Graphics32Magic
+RMDIR /s /Q ct4laz\pl_components\pl_graphics32vpr
 tar -xf %ZipDir%\pl_Graphics32VPR.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_graphics32vpr\pl_graphics32vpr.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_Graphics32VPR (pl_graphics32vpr.lpk)>> %Log%
 @IF /I "%Package%"=="pl_Graphics32VPR" GOTO :done
 
 :pl_Graphics32Magic
+RMDIR /s /Q ct4laz\pl_components\pl_graphics32magic
 tar -xf %ZipDir%\pl_Graphics32Magic.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_graphics32magic\pl_graphics32magic.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_Graphics32Magic (pl_graphics32magic.lpk)>> %Log%
 @IF /I "%Package%"=="pl_Graphics32Magic" GOTO :done
 
 :pl_Graphics32Mg
+RMDIR /s /Q ct4laz\pl_components\pl_graphics32mg
 tar -xf %ZipDir%\pl_Graphics32Mg.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_graphics32mg\pl_graphics32mg.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_Graphics32Mg (pl_graphics32mg.lpk)>> %Log%
 @IF /I "%Package%"=="pl_Graphics32Mg" GOTO :done
 
 :pl_HTML5Canvas
+RMDIR /s /Q ct4laz\pl_components\pl_html5canvas
 tar -xf %ZipDir%\pl_HTML5Canvas.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_html5canvas\pl_html5canvas.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_HTML5Canvas (pl_html5canvas.lpk)>> %Log%
-@IF /I "%Package%"=="pl_Graphics32Mg" GOTO :done
+@IF /I "%Package%"=="pl_HTML5Canvas" GOTO :done
 
 :pl_LockBox
+RMDIR /s /Q ct4laz\pl_components\pl_lockbox
 tar -xf %ZipDir%\pl_LockBox.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_lockbox\pl_lockbox.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_LockBox (pl_lockbox.lpk)>> %Log%
 @IF /I "%Package%"=="pl_LockBox" GOTO :done
 
 :pl_OpenGL
+RMDIR /s /Q ct4laz\pl_components\pl_opengl
 tar -xf %ZipDir%\pl_OpenGL.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_opengl\pl_opengl.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_OpenGL (pl_opengl.lpk)>> %Log%
 @IF /I "%Package%"=="pl_OpenGL" GOTO :done
 
 :pl_OpenGLES
+RMDIR /s /Q ct4laz\pl_components\pl_opengles
 tar -xf %ZipDir%\pl_OpenGLES.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_opengles\pl_opengles.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_OpenGLES (pl_opengles.lpk)>> %Log%
 @IF /I "%Package%"=="pl_OpenGLES" GOTO :done
 
 :pl_PAPPE
+RMDIR /s /Q ct4laz\pl_components\pl_pappe
 tar -xf %ZipDir%\pl_PAPPE.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_pappe\pl_pappe.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_PAPPE (pl_pappe.lpk)>> %Log%
 @IF /I "%Package%"=="pl_PAPPE" GOTO :done
 
 :pl_SDL2
+RMDIR /s /Q ct4laz\pl_components\pl_sdl2
 tar -xf %ZipDir%\pl_SDL2.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_sdl2\pl_sdl2.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_SDL2 (pl_sdl2.lpk)>> %Log%
 @IF /I "%Package%"=="pl_SDL2" GOTO :done
 
 :pl_SynapseVS
+RMDIR /s /Q ct4laz\pl_components\pl_synapsevs
 tar -xf %ZipDir%\pl_SynapseVS.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_synapsevs\pl_synapsevs.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_SynapseVS (pl_synapsevs.lpk)>> %Log%
 @IF /I "%Package%"=="pl_SynapseVS" GOTO :done
 
 :pl_USB
+RMDIR /s /Q ct4laz\pl_components\pl_usb
 tar -xf %ZipDir%\pl_USB.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_usb\pl_usb.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_USB (pl_usb.lpk)>> %Log%
 @IF /I "%Package%"=="pl_USB" GOTO :done
 
 :pl_Vulkan
+RMDIR /s /Q ct4laz\pl_components\pl_vulkan
 tar -xf %ZipDir%\pl_Vulkan.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_vulkan\pl_vulkan.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_Vulkan (pl_vulkan.lpk)>> %Log%
 @IF /I "%Package%"=="pl_Vulkan" GOTO :done
 
 :pl_win_api
+RMDIR /s /Q ct4laz\pl_components\pl_win_api
 tar -xf %ZipDir%\pl_win_api.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_win_api\pl_win_api.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_win_api (pl_win_api.lpk)>> %Log%
 @IF /I "%Package%"=="pl_win_api" GOTO :done
 
 :pl_Win_Dspack
+RMDIR /s /Q ct4laz\pl_components\pl_win_dspack
 tar -xf %ZipDir%\pl_Win_Dspack.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_win_dspack\pl_win_dspack.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_win_dspack (pl_win_dspack.lpk)>> %Log%
 @IF /I "%Package%"=="pl_win_dspack" GOTO :done
 
 :pl_Win_GDI
+RMDIR /s /Q ct4laz\pl_components\pl_wingdi
 tar -xf %ZipDir%\pl_Win_GDI.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_win_gdi\pl_win_gdi.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_win_gdi (pl_win_gdi.lpk)>> %Log%
 @IF /I "%Package%"=="pl_win_gdi" GOTO :done
 
 :pl_Win_Media
+RMDIR /s /Q ct4laz\pl_components\pl_win_media
 tar -xf %ZipDir%\pl_Win_Media.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_win_media\pl_win_media.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_win_media (pl_win_media.lpk)>> %Log%
 @IF /I "%Package%"=="pl_win_media" GOTO :done
 
 :pl_Win_MIDI
+RMDIR /s /Q ct4laz\pl_components\pl_win_midi
 tar -xf %ZipDir%\pl_Win_MIDI.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_win_midi\pl_win_midi.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO pl_win_midi (pl_win_midi.lpk)>> %Log%
 @IF /I "%Package%"=="pl_win_midi" GOTO :done
 
 :PlaysoundPackage
-tar -xf %ZipDir%\PlaysoundPackage.zip playsoundpackage
-%PathToLaz%\lazbuild -B playsoundpackage\playwavepackage.lpk
+RMDIR /s /Q PlaySoundPackage
+tar -xf %ZipDir%\PlaysoundPackage.zip PlaySoundPackage
+%PathToLaz%\lazbuild -B PlaySoundPackage\latest_stable\playwavepackage.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO PlaysoundPackage (playwavepackage.lpk)>> %Log%
 @IF /I "%Package%"=="PlaysoundPackage" GOTO :done
 
 :plotpanel-lazarus-0.97.1
+RMDIR /s /Q plotpanel-lazarus-0.97.1
 tar -xf %ZipDir%\plotpanel-lazarus-0.97.1.zip plotpanel-lazarus-0.97.1
 %PathToLaz%\lazbuild -B plotpanel-lazarus-0.97.1\plot.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO plotpanel-lazarus-0.97.1 (plot.lpk)>> %Log%
 @IF /I "%Package%"=="plotpanel-lazarus-0.97.1" GOTO :done
 
 :PoweredBy
+RMDIR /s /Q poweredby
 tar -xf %ZipDir%\PoweredBy.zip poweredby
 %PathToLaz%\lazbuild -B poweredby\poweredby.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO PoweredBy (poweredby.lpk)>> %Log%
 @IF /I "%Package%"=="PoweredBy" GOTO :done
 
 :PowerPDF
+RMDIR /s /Q PowerPDF
 tar -xf %ZipDir%\PowerPDF.zip PowerPDF
 %PathToLaz%\lazbuild -B PowerPDF\pack_powerpdf.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO PowerPDF (pack_powerpdf.lpk)>> %Log%
 @IF /I "%Package%"=="PowerPDF" GOTO :done
 
 :ProjectMetrics
+RMDIR /s /Q ProjectMetrics
 tar -xf %ZipDir%\ProjectMetrics.zip ProjectMetrics
 %PathToLaz%\lazbuild -B ProjectMetrics\src\projectmetrics.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ProjectMetrics (projectmetrics.lpk)>> %Log%
 @IF /I "%Package%"=="ProjectMetrics" GOTO :done
 
 :PythonForLazarus
+RMDIR /s /Q PythonForLazarus
 tar -xf %ZipDir%\PythonForLazarus.zip PythonForLazarus
 %PathToLaz%\lazbuild -B PythonForLazarus\python4lazarus\python4lazarus_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO PythonForLazarus (python4lazarus_package.lpk)>> %Log%
@@ -1572,8 +1802,9 @@ tar -xf %ZipDir%\PythonForLazarus.zip PythonForLazarus
 ::-------------------------------------- Q -------------------------------------
 
 :QRCodeGenLib
+RMDIR /s /Q QRCodeGenLib
 tar -xf %ZipDir%\QRCodeGenLib.zip QRCodeGenLib
-%PathToLaz%\lazbuild -B QRCodeGenLib\src\Packages\FPC\QRCodeGenLib4PascalPackage.lpk
+%PathToLaz%\lazbuild -B QRCodeGenLib\QRCodeGenLib\src\Packages\FPC\QRCodeGenLib4PascalPackage.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO QRGenLib (QRCodeGenLib4PascalPackage.lpk) >> %Log%
 @IF /I "%Package%"=="QRCodeGenLib" GOTO :done
 
@@ -1581,48 +1812,48 @@ tar -xf %ZipDir%\QRCodeGenLib.zip QRCodeGenLib
 ::-------------------------------------- R -------------------------------------
 
 :Ray4Laz
+RMDIR /s /Q Ray4Laz
 tar -xf %ZipDir%\Ray4Laz.zip Ray4Laz
 %PathToLaz%\lazbuild -B Ray4Laz\package\ray4laz.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO Ray4Laz (ray4laz.lpk) >> %Log%
 %PathToLaz%\lazbuild -B Ray4Laz\package\ray4laz_designtime.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO Ray4Laz (ray4laz_designtime.lpk) >> %Log%
 @IF /I "%Package%"=="Ray4Laz" GOTO :done
-goto :done
 
 :RESTDataware
+RMDIR /s /Q RestDataware
 tar -xf %ZipDir%\RESTDataware.zip RESTDataware
 %PathToLaz%\lazbuild -B RESTDataware\CORE\Packages\Lazarus\restdatawarecomponents.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO RESTDataware (restdatawarecomponents.lpk) >> %Log%
 @IF /I "%Package%"=="RESTDataware" GOTO :done
-goto :done
 
 :Rhl
+RMDIR /s /Q Rhl
 tar -xf %ZipDir%\Rhl.zip Rhl
 %PathToLaz%\lazbuild -B Rhl\rhl_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO Rhl (rhl_package.lpk) >> %Log%
 @IF /I "%Package%"=="Rhl" GOTO :done
-goto :done
 
 :RhsPack
+RMDIR /s /Q RhsPack
 tar -xf %ZipDir%\RhsPack.zip RhsPack
 %PathToLaz%\lazbuild -B RhsPack\rhspack.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO RhsPack (rhspack.lpk) >> %Log%
 @IF /I "%Package%"=="RhsPack" GOTO :done
-goto :done
 
 :RichMemo
+RMDIR /s /Q richmemo
 tar -xf %ZipDir%\RichMemo.zip richmemo
 %PathToLaz%\lazbuild -B richmemo\richmemopackage.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO RichMemo (richmemopackage.lpk) >> %Log%
 @IF /I "%Package%"=="RichMemo" GOTO :done
-goto :done
 
 :ringwatch
+RMDIR /s /Q ringwatch
 tar -xf %ZipDir%\ringwatch.zip ringwatch
 %PathToLaz%\lazbuild -B ringwatch\ringwatch.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ringwatch (ringwatch.lpk) >> %Log%
 @IF /I "%Package%"=="ringwatch" GOTO :done
-goto :done
 
 :: RX -- already handled
 
@@ -1630,12 +1861,14 @@ goto :done
 ::-------------------------------------- S -------------------------------------
 
 :SAK
+RMDIR /s /Q sak
 tar -xf %ZipDir%\SAK.zip sak
 %PathToLaz%\lazbuild -B sak\sak\sak_lcl\src\sak.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO SAK (sak.lpk) >> %Log%
 @IF /I "%Package%"=="SAK" GOTO :done
 
 :ScrollText
+RMDIR /s /Q scrolltext
 tar -xf %ZipDir%\ScrollText.zip scrolltext
 %PathToLaz%\lazbuild -B scrolltext\scrolltext.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ScrollText (scrolltext.lpk) >> %Log%
@@ -1644,6 +1877,7 @@ tar -xf %ZipDir%\ScrollText.zip scrolltext
 :: Sdpo -- already handled
 
 :SemaphorGrid
+RMDIR /s /Q grid_semaphor
 tar -xf %ZipDir%\SemaphorGrid.zip grid_semaphor
 %PathToLaz%\lazbuild -B grid_semaphor\semaphorgridlpk.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO SemaphorGrid (semaphorgridlpk.lpk) >> %Log%
@@ -1652,32 +1886,35 @@ tar -xf %ZipDir%\SemaphorGrid.zip grid_semaphor
 :: SimpleBaseLib -- already handled
 
 :SlimRWLock
+RMDIR /s /Q SlimRWLock
 tar -xf %ZipDir%\SlimRWLock.zip SlimRWLock
 %PathToLaz%\lazbuild -B SLIMRWLock\slimrwlock.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO SlimRWLock (slimrwlock.lpk) >> %Log%
 @IF /I "%Package%"=="SlimRWLock" GOTO :done
 
 :SMNetGradient
-:SMNetGradien2.0.6
-tar -xf %ZipDir%\SMNetGradient2.0.6.zip SMNetGradient2.0.6
-%PathToLaz%\lazbuild -B SMNetGradient2.0.6\smnetgradientlaz.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO  SMNetGradient2.0.6 (smnetgradientlaz.lpk) >> %Log%
-@IF /I "%Package%"=="SMNetGradient2.0.6" GOTO :done
+RMDIR /s /Q SMNetGradient
+tar -xf %ZipDir%\SMNetGradient.zip SMNetGradient
+%PathToLaz%\lazbuild -B SMNetGradient\smnetgradientlaz.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO  SMNetGradient (smnetgradientlaz.lpk) >> %Log%
 @IF /I "%Package%"=="SMNetGradient" GOTO :done
 
 :SortGrid
+RMDIR /s /Q sortgrid
 tar -xf %ZipDir%\SortGrid.zip sortgrid
 %PathToLaz%\lazbuild -B sortgrid\laz_sortgrid.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO  SortGrid (laz_sortgrid.lpk) >> %Log%
 @IF /I "%Package%"=="SortGrid" GOTO :done
 
 :SpkToolbar
-tar -xf %ZipDir%\SpkToolbar.zip spktoolbar
-%PathToLaz%\lazbuild -B spktoolbar\spktoolbarpackage.lpk
+RMDIR /s /Q SpkToolBar
+tar -xf %ZipDir%\SpkToolbar.zip SpkToolBar
+%PathToLaz%\lazbuild -B SpkToolBar\spktoolbarpackage.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO  SpkToolbar (spktoolbarpackage.lpk) >> %Log%
 @IF /I "%Package%"=="SpkToolbar" GOTO :done
 
 :splashabout
+RMDIR /s /Q splashabout
 tar -xf %ZipDir%\splashabout.zip splashabout
 %PathToLaz%\lazbuild -B splashabout\splashabout.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO  splashabout (splashabout.lpk) >> %Log%
@@ -1686,25 +1923,27 @@ tar -xf %ZipDir%\splashabout.zip splashabout
 :: Synapse40.1 -- already handled
 
 :SynFacilSyn
+RMDIR /s /Q "SynFacilSyn 1.21"
 tar -xf %ZipDir%\SynFacilSyn.zip "SynFacilSyn 1.21"
 %PathToLaz%\lazbuild -B "SynFacilSyn 1.21\synfacilsyn.lpk"
-@IF %ERRORLEVEL% NEQ 0 ECHO  SynFacilSyn (synfacilsyn.lpk) >> %Log%
+@IF %ERRORLEVEL% NEQ 0 ECHO SynFacilSyn (synfacilsyn.lpk) >> %Log%
 @IF /I "%Package%"=="SynFacilSyn" GOTO :done
 
 :SysTools
-tar -xf %ZipDir%\SysTools.zip systools
-%PathToLaz%\lazbuild -B systools\laz_systools.lpk"
-@IF %ERRORLEVEL% NEQ 0 ECHO  SysTools (laz_systools.lpk) >> %Log%
-%PathToLaz%\lazbuild -B systools\laz_systools_design.lpk"
-@IF %ERRORLEVEL% NEQ 0 ECHO  SysTools (laz_systools_design.lpk) >> %Log%
-%PathToLaz%\lazbuild -B systools\laz_systoolsdb.lpk"
-@IF %ERRORLEVEL% NEQ 0 ECHO  SysTools (laz_systoolsdb.lpk) >> %Log%
-%PathToLaz%\lazbuild -B systools\laz_systoolsdb_design.lpk"
-@IF %ERRORLEVEL% NEQ 0 ECHO  SysTools (laz_systoolsdb_design.lpk) >> %Log%
-%PathToLaz%\lazbuild -B systools\laz_systoolswin.lpk"
-@IF %ERRORLEVEL% NEQ 0 ECHO  SysTools (laz_systoolswin.lpk) >> %Log%
-%PathToLaz%\lazbuild -B systools\laz_systoolswin_design.lpk"
-@IF %ERRORLEVEL% NEQ 0 ECHO  SysTools (laz_systoolswin_design.lpk) >> %Log%
+RMDIR /s /Q SysTools
+tar -xf %ZipDir%\SysTools.zip SysTools
+%PathToLaz%\lazbuild -B SysTools\laz_systools.lpk"
+@IF %ERRORLEVEL% NEQ 0 ECHO SysTools (laz_systools.lpk) >> %Log%
+%PathToLaz%\lazbuild -B SysTools\laz_systools_design.lpk"
+@IF %ERRORLEVEL% NEQ 0 ECHO SysTools (laz_systools_design.lpk) >> %Log%
+%PathToLaz%\lazbuild -B SysTools\laz_systoolsdb.lpk"
+@IF %ERRORLEVEL% NEQ 0 ECHO SysTools (laz_systoolsdb.lpk) >> %Log%
+%PathToLaz%\lazbuild -B SysTools\laz_systoolsdb_design.lpk"
+@IF %ERRORLEVEL% NEQ 0 ECHO SysTools (laz_systoolsdb_design.lpk) >> %Log%
+%PathToLaz%\lazbuild -B SysTools\laz_systoolswin.lpk"
+@IF %ERRORLEVEL% NEQ 0 ECHO SysTools (laz_systoolswin.lpk) >> %Log%
+%PathToLaz%\lazbuild -B SysTools\laz_systoolswin_design.lpk"
+@IF %ERRORLEVEL% NEQ 0 ECHO SysTools (laz_systoolswin_design.lpk) >> %Log%
 
 @IF /I "%Package%"=="SysTools" GOTO :done
 
@@ -1712,6 +1951,7 @@ tar -xf %ZipDir%\SysTools.zip systools
 ::-------------------------------------- T -------------------------------------
 
 :TaurusTLS
+RMDIR /s /Q TaurusTLS
 tar -xf %ZipDir%\TaurusTLS.zip TaurusTLS
 %PathToLaz%\lazbuild -B TaurusTLS\Packages\lazarus\taurustlsrt.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO TaurusTLD (taurustlsrt.lpk) >> %Log%
@@ -1720,54 +1960,62 @@ tar -xf %ZipDir%\TaurusTLS.zip TaurusTLS
 @IF /I "%Package%"=="TaurusTLS" GOTO :done
 
 :TDINoteBook
+RMDIR /s /Q TDINoteBook
 tar -xf %ZipDir%\TDINoteBook.zip TDINoteBook
 %PathToLaz%\lazbuild -B TDINoteBook\tdi.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO TDINoteBook (tdi.lpk) >> %Log%
 @IF /I "%Package%"=="TDINoteBook" GOTO :done
 
 :TextViewer
-tar -xf %ZipDir%\TextViewer.zip viewer
-%PathToLaz%\lazbuild -B viewer\viewerpackage.lpk
+RMDIR /s /Q TextViewer
+tar -xf %ZipDir%\TextViewer.zip TextViewer
+%PathToLaz%\lazbuild -B TextViewer\textviewer\viewerpackage.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO TextViewer (viewerpackage.lpk) >> %Log%
 @IF /I "%Package%"=="TextViewer" GOTO :done
 
 :TIPEdit
+RMDIR /s /Q TIPEdit
 tar -xf %ZipDir%\TIPEdit.zip TIPEdit
 %PathToLaz%\lazbuild -B TIPEdit\ipedit_pkg.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO TIPEdit (ipedit_pkg.lpk) >> %Log%
 @IF /I "%Package%"=="TIPEdit" GOTO :done
 
 :TParadoxDataset
-tar -xf %ZipDir%\TParadoxDataset.zip tparadoxdataset
-%PathToLaz%\lazbuild -B tparadoxdataset\lazparadoxpkg.lpk
+RMDIR /s /Q TParadoxDataset
+tar -xf %ZipDir%\TParadoxDataset.zip TParadoxDataset
+%PathToLaz%\lazbuild -B TParadoxDataset\lazparadoxpkg.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO TParadoxDataset (lazparadoxpkg.lpk) >> %Log%
 @IF /I "%Package%"=="TParadoxDataset" GOTO :done
 
 :TSalesSwitch
+RMDIR /s /Q TSalesSwitch
 tar -xf %ZipDir%\TSalesSwitch.zip TSalesSwitch
 %PathToLaz%\lazbuild -B TSalesSwitch\pksalesswitch.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO TSalesSwitch (pksalesswitch.lpk) >> %Log%
 @IF /I "%Package%"=="TSalesSwitch" GOTO :done
 
 :TVPlanit
-tar -xf %ZipDir%\TVPlanit.zip tvplanit
-%PathToLaz%\lazbuild -B tvplanit\laz_visualplanit.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO TVPlanit (laz_visualplanit.lpk) >> %Log%
-%PathToLaz%\lazbuild -B tvplanit\laz_visualplanit_design.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO TVPlanit (laz_visualplanit_design.lpk) >> %Log%
-%PathToLaz%\lazbuild -B tvplanit\laz_visualplanit_zeos.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO TVPlanit (laz_visualplanit_zeos.lpk) >> %Log%
-%PathToLaz%\lazbuild -B tvplanit\laz_visualplanit_zeos_design.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO TVPlanit (laz_visualplanit_zeos_design.lpk) >> %Log%
+RMDIR /s /Q TVPlanIt
+tar -xf %ZipDir%\TVPlanit.zip TVPlanIt
+%PathToLaz%\lazbuild -B TVPlanIt\laz_visualplanit.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO TVPlanIt (laz_visualplanit.lpk) >> %Log%
+%PathToLaz%\lazbuild -B TVPlanIt\laz_visualplanit_design.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO TVPlanIt (laz_visualplanit_design.lpk) >> %Log%
+%PathToLaz%\lazbuild -B TVPlanIt\laz_visualplanit_zeos.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO TVPlanIt (laz_visualplanit_zeos.lpk) >> %Log%
+%PathToLaz%\lazbuild -B TVPlaniT\laz_visualplanit_zeos_design.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO TVPlanIt (laz_visualplanit_zeos_design.lpk) >> %Log%
 @IF /I "%Package%"=="TVPlanit" GOTO :done
 
 :TwainScanner
+RMDIR /s /Q DelphiTwain
 tar -xf %ZipDir%\TwainScanner.zip DelphiTwain
 %PathToLaz%\lazbuild -B DelphiTwain\delphitwain_pkg.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO TwainScanner (delphitwain_pkg.lpk) >> %Log%
 @IF /I "%Package%"=="TwainScanner" GOTO :done
 
 :TwilioSMS
+RMDIR /s /Q TwilioLib
 tar -xf %ZipDir%\TwilioSMS.zip TwilioLib
 %PathToLaz%\lazbuild -B TwilioLib\twilio.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO TwilioSMS (twilio.lpk) >> %Log%
@@ -1777,24 +2025,28 @@ tar -xf %ZipDir%\TwilioSMS.zip TwilioLib
 ::-------------------------------------- U -------------------------------------
 
 :UEControls
+RMDIR /s /Q uecontrols-master
 tar -xf %ZipDir%\UEControls.zip uecontrols-master
 %PathToLaz%\lazbuild -B uecontrols-master\uecontrols.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO UEControls (uecontrols.lpk) >> %Log%
 @IF /I "%Package%"=="UEControls" GOTO :done
 
 :UniqueInstance
+RMDIR /s /Q uniqueinstance
 tar -xf %ZipDir%\UniqueInstance.zip uniqueinstance
 %PathToLaz%\lazbuild -B uniqueinstance\uniqueinstance_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO UniqueInstance (uniqueinstance_package.lpk) >> %Log%
 @IF /I "%Package%"=="UniqueInstance" GOTO :done
 
 :UOS
+RMDIR /s /Q UOS
 tar -xf %ZipDir%\UOS.zip UOS
 %PathToLaz%\lazbuild -B UOS\src\laz_uos.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO UOS (laz_uos.lpk) >> %Log%
 @IF /I "%Package%"=="UOS" GOTO :done
 
 :UserControl
+RMDIR /s /Q UserControl
 tar -xf %ZipDir%\UserControl.zip UserControl
 %PathToLaz%\lazbuild -B UserControl\package\lazarus\pckUserControlRuntime.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO UserControl (pckUserControlRuntime.lpk) >> %Log%
@@ -1805,6 +2057,7 @@ tar -xf %ZipDir%\UserControl.zip UserControl
 @IF /I "%Package%"=="UserControl" GOTO :done
 
 :UTF8Tools
+RMDIR /s /Q UTF8Tools
 tar -xf %ZipDir%\UTF8Tools.zip UTF8Tools
 %PathToLaz%\lazbuild -B UTF8Tools\utf8tools.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO UTF8Tools (utf8tools.lpk) >> %Log%
@@ -1816,12 +2069,14 @@ tar -xf %ZipDir%\UTF8Tools.zip UTF8Tools
 :: VampyreImaging -- already handled
 
 :VirtualDBGrid
+RMDIR /s /Q virtualdbgrid
 tar -xf %ZipDir%\VirtualDBGrid.zip virtualdbgrid
 %PathToLaz%\lazbuild -B virtualdbgrid\virtualdbgrid_package.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO VirtualDBGrid (virtualdbgrid_package.lpk) >> %Log%
 @IF /I "%Package%"=="VirtualDBGrid" GOTO :done
 
 :VirtualDBTreeEx
+RMDIR /s /Q virtualdbtreeex
 tar -xf %ZipDir%\VirtualDBTreeEx.zip virtualdbtreeex
 %PathToLaz%\lazbuild -B virtualdbtreeex\lazarus\virtualdbtreeexlaz.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO VirtualDBTreeEx (virtualdbtreeexlaz.lpk) >> %Log%
@@ -1833,18 +2088,21 @@ tar -xf %ZipDir%\VirtualDBTreeEx.zip virtualdbtreeex
 ::-------------------------------------- W -------------------------------------
 
 :WebView4Delphi
+RMDIR /s /Q WebView4Delphi
 tar -xf %ZipDir%\WebView4Delphi.zip WebView4Delphi
 %PathToLaz%\lazbuild -B WebView4Delphi\packages\\webview4delphi.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO WebView4Delphi (webview4delphi.lpk) >> %Log%
 @IF /I "%Package%"=="WebView4Delphi" GOTO :done
 
 :WIAScanner
+RMDIR /s /Q WIAPascal
 tar -xf %ZipDir%\WIAScanner.zip WIAPascal
 %PathToLaz%\lazbuild -B WiaPascal\WIAPascal_pkg.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO WiaScanner (WIAPascal_pkg.lpk) >> %Log%
 @IF /I "%Package%"=="WIAScanner" GOTO :done
 
 :Wst
+RMDIR /s /Q wst
 tar -xf %ZipDir%\Wst.zip wst
 %PathToLaz%\lazbuild -B wst\ide\lazarus\wst_core.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO West (wst_core.lpk) >> %Log%
@@ -1860,6 +2118,7 @@ tar -xf %ZipDir%\Wst.zip wst
 @IF /I "%Package%"=="Wst" GOTO :done
 
 :WThread
+RMDIR /s /Q wthread
 tar -xf %ZipDir%\WThread.zip wthread
 %PathToLaz%\lazbuild -B wthread\threading.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO WThread (threading.lpk) >> %Log%
@@ -1868,12 +2127,14 @@ tar -xf %ZipDir%\WThread.zip wthread
 ::-------------------------------------- X -------------------------------------
 
 :XMailer
+RMDIR /s /Q xmailer-master
 tar -xf %ZipDir%\XMailer.zip xmailer-master
 %PathToLaz%\lazbuild -B xmailer-master\pkg\xmailerpkg.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO XMailer (xmailerpkg.lpk) >> %Log%
 @IF /I "%Package%"=="XMailer" GOTO :done
 
 :XMLStreaming
+RMDIR /s /Q XMLStreaming
 tar -xf %ZipDir%\XMLStreaming.zip XMLStreaming
 %PathToLaz%\lazbuild -B XMLStreaming\xmlstreaming.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO XMLStreaming (xmlstreaming.lpk) >> %Log%
@@ -1885,24 +2146,30 @@ tar -xf %ZipDir%\XMLStreaming.zip XMLStreaming
 :: ZeosDBO -- already handled
 
 :ZFMSDK
+RMDIR /s /Q zfmsdk
 tar -xf %ZipDir%\ZFMSDK.zip zfmsdk
 %PathToLaz%\lazbuild -B zfmsdk\zfmsdk.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ZFMSDK (zfmsdk.lpk) >> %Log%
 @IF /I "%Package%"=="ZFMSDK" GOTO :done
 
 :ZMSQL
+RMDIR /s /Q zmsql
 tar -xf %ZipDir%\ZMSQL.zip zmsql
 %PathToLaz%\lazbuild -B zmsql\zmsql.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ZMSQL (zmsql.lpk) >> %Log%
 @IF /I "%Package%"=="ZMSQL" GOTO :done
 
 :ZReport
+RMDIR /s /Q ZReport
 tar -xf %ZipDir%\ZReport.zip ZReport
 %PathToLaz%\lazbuild -B ZReport\source\zrptlaz.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ZReport (zrptlaz.lpk) >> %Log%
 %PathToLaz%\lazbuild -B ZReport\source\zrptlaz_dsg.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ZReport (zrptlaz_dsg.lpk) >> %Log%
 @IF /I "%Package%"=="ZReport" GOTO :done
+
+
+::==============================================================================
 
 :done
 ECHO Completed at %TIME% >> %Log%
