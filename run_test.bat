@@ -619,12 +619,12 @@ tar -xf %ZipDir%\CmdLine.zip cmdline
 @IF %ERRORLEVEL% NEQ 0 ECHO cmdline (cmdbox.lpk) >> %Log%
 @IF /I "%Package%"=="cmdline" GOTO :done
 
-:CodeLibrarian
-RMDIR /s /Q CodeLibrarian
-tar -xf %ZipDir%\CodeLibrarian.zip CodeLibrarian
-%PathToLaz%\lazbuild -B CodeLibrarian\codelibrarian.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO Codelibrarian (codelibrarian.lpk) >> %Log%
-@IF /I "%Package%"=="CodeLibrarian" GOTO :done
+:Code-Librarian
+RMDIR /s /Q Code-Librarian
+tar -xf %ZipDir%\Code-Librarian.zip Code-Librarian
+%PathToLaz%\lazbuild -B Code-Librarian\codelibrarian.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO Code-Librarian (codelibrarian.lpk) >> %Log%
+@IF /I "%Package%"=="Code-Librarian" GOTO :done
 
 :CodesigningHelper
 RMDIR /s /Q lazcodesigninghelper-master
@@ -834,6 +834,13 @@ tar -xf %ZipDir%\ExtraSyn.zip extrasyn
 %PathToLaz%\lazbuild -B extrasyn\extrahighlighters_dsgn.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO ExtraSyn (extrahighlighers_dsgn.lpk) >> %Log%
 @IF /I "%Package%"=="ExtraSyn" GOTO :done
+
+:ExtTabCtrl
+RMDIR /s /Q ExtTabCtrl
+tar -xf %ZipDir%\ExtTabCtrl.zip ExtTabCtrl
+%PathToLaz%\lazbuild -B ExtTabCtrl\component\texttabctrl.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO ExtTabCtrl (texttabctrl.lpk) >> %Log%
+@IF /I "%Package%"=="ExtTabCtrl" GOTO :done
 
 :EyeCandyControls
 RMDIR /s /Q EC_Controls
@@ -1923,9 +1930,9 @@ tar -xf %ZipDir%\splashabout.zip splashabout
 :: Synapse40.1 -- already handled
 
 :SynFacilSyn
-RMDIR /s /Q "SynFacilSyn 1.21"
-tar -xf %ZipDir%\SynFacilSyn.zip "SynFacilSyn 1.21"
-%PathToLaz%\lazbuild -B "SynFacilSyn 1.21\synfacilsyn.lpk"
+RMDIR /s /Q "SynFacilSyn"
+tar -xf %ZipDir%\SynFacilSyn.zip "SynFacilSyn"
+%PathToLaz%\lazbuild -B "SynFacilSyn\synfacilsyn.lpk"
 @IF %ERRORLEVEL% NEQ 0 ECHO SynFacilSyn (synfacilsyn.lpk) >> %Log%
 @IF /I "%Package%"=="SynFacilSyn" GOTO :done
 
@@ -2125,6 +2132,13 @@ tar -xf %ZipDir%\WThread.zip wthread
 @IF /I "%Package%"=="WThread" GOTO :done
 
 ::-------------------------------------- X -------------------------------------
+
+:XelAnimate
+RMDIR /s /Q XelAnimate
+tar -xf %ZipDir%\XelAnimate.zip XelAnimate
+%PathToLaz%\lazbuild -B XelAnimate\AnimationPkg.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO XelAnimate (AnimationPkg.lpk) >> %Log%
+@IF /I "%Package%"=="XelAnimate" GOTO :done
 
 :XMailer
 RMDIR /s /Q xmailer-master
