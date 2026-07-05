@@ -1619,7 +1619,7 @@ tar -xf %ZipDir%\pl_ExCompress.zip ct4laz
 RMDIR /s /Q ct4laz\pl_components\pl_excontrols
 tar -xf %ZipDir%\pl_ExControls.zip ct4laz
 %PathToLaz%\lazbuild -B ct4laz\pl_components\pl_excontrols\pl_excontrols.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO pl_ExConctrols (pl_excontrols.lpk)>> %Log%
+@IF %ERRORLEVEL% NEQ 0 ECHO pl_ExControls (pl_excontrols.lpk)>> %Log%
 @IF /I "%Package%"=="pl_ExControls" GOTO :done
 
 :pl_ExDatabase
@@ -2139,6 +2139,34 @@ tar -xf %ZipDir%\XelAnimate.zip XelAnimate
 %PathToLaz%\lazbuild -B XelAnimate\AnimationPkg.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO XelAnimate (AnimationPkg.lpk) >> %Log%
 @IF /I "%Package%"=="XelAnimate" GOTO :done
+
+:XelContainers
+RMDIR /s /Q XelContainers
+tar -xf %ZipDir%\XelContainers.zip XelContainers
+%PathToLaz%\lazbuild -B XelContainers\XelContainers.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO XelContainers (XelContainers.lpk) >> %Log%
+@IF /I "%Package%"=="XelContainers" GOTO :done
+
+:XelImageFormats
+RMDIR /s /Q XelImageFormats
+tar -xf %ZipDir%\XelImageFormats.zip XelImageFormats
+%PathToLaz%\lazbuild -B XelImageFormats\XelImageFormats.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO XelImageFormats (XelImageFormats.lpk) >> %Log%
+@IF /I "%Package%"=="XelImageFormats" GOTO :done
+
+:XelTiledImage
+RMDIR /s /Q XelTiledImage
+tar -xf %ZipDir%\XelTiledImage.zip XelTiledImage
+%PathToLaz%\lazbuild -B XelTiledImage\XelTiledImagePkg.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO XelTiledImage (XelTiledImagePkg.lpk) >> %Log%
+@IF /I "%Package%"=="XelTiledImage" GOTO :done
+
+:XelZoomImage
+RMDIR /s /Q XelZoomImage
+tar -xf %ZipDir%\XelZoomImage.zip XelZoomImage
+%PathToLaz%\lazbuild -B XelZoomImage\XelZoomImagePkg.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO XelZoomImage (XelZoomImagePkg.lpk) >> %Log%
+@IF /I "%Package%"=="XelZoomImage" GOTO :done
 
 :XMailer
 RMDIR /s /Q xmailer-master
