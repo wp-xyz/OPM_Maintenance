@@ -2028,6 +2028,14 @@ tar -xf %ZipDir%\TwilioSMS.zip TwilioLib
 @IF %ERRORLEVEL% NEQ 0 ECHO TwilioSMS (twilio.lpk) >> %Log%
 @IF /I "%Package%"=="TwilioSMS" GOTO :done
 
+:TyControls
+RMDIR /s /Q Tycontrols
+tar -xf %ZipDir%\TyControls.zip TyControls
+%PathToLaz%\lazbuild -B TyControls\tycontrols.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO TyControls (tycontrols.lpk) >> %Log%
+%PathToLaz%\lazbuild -B TyControls\tycontrols_dt.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO TyControls (tycontrols_dt.lpk) >> %Log%
+@IF /I "%Package%"=="TyControls" GOTO :done
 
 ::-------------------------------------- U -------------------------------------
 
