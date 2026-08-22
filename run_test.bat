@@ -598,6 +598,13 @@ tar -xf %ZipDir%\CGI.zip CGI
 @IF %ERRORLEVEL% NEQ 0 ECHO CGI (cgiide.lpk) >> %Log%
 @IF /I "%Package%"=="CGI" GOTO :done
 
+:ChemCtrls
+RMDIR /s /Q chemctrls
+tar -xf %ZipDir%\ChemCtrls.zip ChemCtrls
+%PathToLaz%\lazbuild -B ChemCtrls\chemctrls_pkg.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO ChemCtrls (chemctrls_pkg.lpk) >> %Log%
+@IF /I "%Package%"=="ChemCtrls" GOTO :done
+
 :ChemText
 RMDIR /s /Q chemtext
 tar -xf %ZipDir%\ChemText.zip chemtext
@@ -1484,8 +1491,8 @@ tar -xf %ZipDir%\OnGuard.zip OnGuard
 @IF %ERRORLEVEL% NEQ 0 ECHO OnGuard (tponguard.lpk)>> %Log%
 ::%PathToLaz%\lazbuild -B onGuard\packages\tponguard_fpgui.lpk
 ::@IF %ERRORLEVEL% NEQ 0 ECHO OnGuard (tponguard_fpgui.lpk)>> %Log%
-%PathToLaz%\lazbuild -B onGuard\packages\tponguard_design.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO OnGuard (tponguard.design)>> %Log%
+::%PathToLaz%\lazbuild -B onGuard\packages\tponguard_design.lpk
+::@IF %ERRORLEVEL% NEQ 0 ECHO OnGuard (tponguard_design)>> %Log%
 @IF /I "%Package%"=="OnGuard" GOTO :done
 
 :OpenGPSX
@@ -2141,19 +2148,7 @@ tar -xf %ZipDir%\WThread.zip wthread
 
 ::-------------------------------------- X -------------------------------------
 
-:XelAnimate
-RMDIR /s /Q XelAnimate
-tar -xf %ZipDir%\XelAnimate.zip XelAnimate
-%PathToLaz%\lazbuild -B XelAnimate\AnimationPkg.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO XelAnimate (AnimationPkg.lpk) >> %Log%
-@IF /I "%Package%"=="XelAnimate" GOTO :done
-
-:XelContainers
-RMDIR /s /Q XelContainers
-tar -xf %ZipDir%\XelContainers.zip XelContainers
-%PathToLaz%\lazbuild -B XelContainers\XelContainers.lpk
-@IF %ERRORLEVEL% NEQ 0 ECHO XelContainers (XelContainers.lpk) >> %Log%
-@IF /I "%Package%"=="XelContainers" GOTO :done
+:: XelImageformats is needed by some other Xel packages...
 
 :XelImageFormats
 RMDIR /s /Q XelImageFormats
@@ -2162,12 +2157,75 @@ tar -xf %ZipDir%\XelImageFormats.zip XelImageFormats
 @IF %ERRORLEVEL% NEQ 0 ECHO XelImageFormats (XelImageFormats.lpk) >> %Log%
 @IF /I "%Package%"=="XelImageFormats" GOTO :done
 
+:XelAnimate
+RMDIR /s /Q XelAnimate
+tar -xf %ZipDir%\XelAnimate.zip XelAnimate
+%PathToLaz%\lazbuild -B XelAnimate\AnimationPkg.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO XelAnimate (AnimationPkg.lpk) >> %Log%
+@IF /I "%Package%"=="XelAnimate" GOTO :done
+
+:XelAudio
+tar -xf %ZipDir%\XelAudio.zip XelAudio
+%PathToLaz%\lazbuild -B XelAudio\XelAudioPkg.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO XelAudio (XelAudioPkg.lpk) >> %Log%
+@IF /I "%Package%"=="XelAudio" GOTO :done
+
+:XelCharts
+tar -xf %ZipDir%\XelCharts.zip XelCharts
+%PathToLaz%\lazbuild -B XelCharts\XelCharts.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO XelCharts (XelCharts.lpk) >> %Log%
+@IF /I "%Package%"=="XelCharts" GOTO :done
+
+:XelComponents
+tar -xf %ZipDir%\XelComponents.zip XelComponents
+%PathToLaz%\lazbuild -B XelComponents\XelComponents.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO XelComponents (XelComponents.lpk) >> %Log%
+@IF /I "%Package%"=="XelComponents" GOTO :done
+
+:XelContainers
+RMDIR /s /Q XelContainers
+tar -xf %ZipDir%\XelContainers.zip XelContainers
+%PathToLaz%\lazbuild -B XelContainers\XelContainers.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO XelContainers (XelContainers.lpk) >> %Log%
+@IF /I "%Package%"=="XelContainers" GOTO :done
+
+:XelControls
+tar -xf %ZipDir%\XelControls.zip XelControls
+%PathToLaz%\lazbuild -B XelControls\XelControls.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO XelControls (XelControls.lpk) >> %Log%
+@IF /I "%Package%"=="XelControls" GOTO :done
+
+:XelFontManager
+tar -xf %ZipDir%\XelFontManager.zip XelFontManager
+%PathToLaz%\lazbuild -B XelFontManager\XelFonts.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO XelFontManager (XelFonts.lpk) >> %Log%
+@IF /I "%Package%"=="XelFontManager" GOTO :done
+
+:XelHash
+tar -xf %ZipDir%\XelHash.zip XelHash
+%PathToLaz%\lazbuild -B XelHash\XelHash.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO XelHash (XelHash.lpk) >> %Log%
+@IF /I "%Package%"=="XelHash" GOTO :done
+
+:XelThumbs
+tar -xf %ZipDir%\XelThumbs.zip XelThumbs
+%PathToLaz%\lazbuild -B XelThumbs\XelThumbsPkg.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO XelThumbs (XelThumbsPkg.lpk) >> %Log%
+@IF /I "%Package%"=="XelThumbs" GOTO :done
+
 :XelTiledImage
 RMDIR /s /Q XelTiledImage
 tar -xf %ZipDir%\XelTiledImage.zip XelTiledImage
 %PathToLaz%\lazbuild -B XelTiledImage\XelTiledImagePkg.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO XelTiledImage (XelTiledImagePkg.lpk) >> %Log%
 @IF /I "%Package%"=="XelTiledImage" GOTO :done
+
+:XelUI
+RMDIR /s /Q XelUI
+tar -xf %ZipDir%\XelUI.zip XelUI
+%PathToLaz%\lazbuild -B XelUI\XelUIPkg.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO XelUI (XelUIPkg.lpk) >> %Log%
+@IF /I "%Package%"=="XelUI" GOTO :done
 
 :XelZoomImage
 RMDIR /s /Q XelZoomImage
