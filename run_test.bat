@@ -224,6 +224,17 @@ tar -xf %ZipDir%\VirtualTreeViewV5.zip VirtualTreeViewV5
 @IF %ERRORLEVEL% NEQ 0 ECHO VirtualTreeViewV5 (virtualtreeview_package.lpk) >> %Log%
 @IF /I "%Package%"=="VirtualTreeViewV5" GOTO :done
 
+:MathParser
+RMDIR /s /Q MathParser
+tar -xf %ZipDir%\MathParser.zip pascal-mathparser
+%PathToLaz%\lazbuild -B pascal-mathparser\packages\lazarus\crosspascal_parser.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO MathParser (crosspascal_parser.lpk) >> %Log%
+
+%PathToLaz%\lazbuild -B pascal-mathparser\packages\lazarus\crosspascal_parserjit.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO MathParser (crosspascal_parserjit.lpk) >> %Log%
+
+@IF /I "%Package%"=="MathParser" GOTO :done
+
 :Zeos
 :ZeosDBO
 RMDIR /s /Q zeosdbo
@@ -653,6 +664,13 @@ tar -xf %ZipDir%\colorpalette.zip colorpalette
 %PathToLaz%\lazbuild -B colorpalette\lazcolorpalette.lpk
 @IF %ERRORLEVEL% NEQ 0 ECHO colorpalette (lazcolorpalette.lpk) >> %Log%
 @IF /I "%Package%"=="colorpalette" GOTO :done
+
+:CrossGraph
+RMDIR /s /Q pascal-crossgraph
+tar -xf %ZipDir%\CrossGraph.zip pascal-crossgraph
+%PathToLaz%\lazbuild -B pascal-crossgraph\packages\lazarus\crosspascal_graph.lpk
+@IF %ERRORLEVEL% NEQ 0 ECHO CrossGraph (crosspascal_graph.lpk) >> %Log%
+@IF /I "%Package%"=="CrossGraph" GOTO :done
 
 :cryptini
 RMDIR /s /Q cryptini
